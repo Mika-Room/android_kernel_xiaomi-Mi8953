@@ -1563,12 +1563,6 @@ static int kgsl_iommu_init(struct kgsl_mmu *mmu)
 		mmu->features |= KGSL_MMU_GLOBAL_PAGETABLE;
 	}
 
-	if (iommu->version == 1 && iommu->micro_mmu_ctrl == UINT_MAX) {
-		KGSL_CORE_ERR(
-			"missing qcom,micro-mmu-control forces global pt\n");
-		mmu->features |= KGSL_MMU_GLOBAL_PAGETABLE;
-	}
-
 	/* Check to see if we need to do the IOMMU sync dance */
 	need_iommu_sync = of_property_read_bool(device->pdev->dev.of_node,
 		"qcom,gpu-quirk-iommu-sync");
@@ -2684,11 +2678,6 @@ static int _kgsl_iommu_probe(struct kgsl_device *device,
 
 	memset(iommu, 0, sizeof(*iommu));
 
-	if (of_device_is_compatible(node, "qcom,kgsl-smmu-v1"))
-		iommu->version = 1;
-	else
-		iommu->version = 2;
-
 	if (of_property_read_u32_array(node, "reg", reg_val, 2)) {
 		KGSL_CORE_ERR("dt: Unable to read KGSL IOMMU register range\n");
 		return -EINVAL;
@@ -2725,10 +2714,6 @@ static int _kgsl_iommu_probe(struct kgsl_device *device,
 			device->mmu.features |= kgsl_iommu_features[i].bit;
 	}
 
-	if (of_property_read_u32(node, "qcom,micro-mmu-control",
-		&iommu->micro_mmu_ctrl))
-		iommu->micro_mmu_ctrl = UINT_MAX;
-
 	if (of_property_read_u32(node, "qcom,secure_align_mask",
 		&device->mmu.secure_align_mask))
 		device->mmu.secure_align_mask = 0xfff;
@@ -2754,7 +2739,6 @@ static const struct {
 	char *compat;
 	int (*probe)(struct kgsl_device *device, struct device_node *node);
 } kgsl_dt_devices[] = {
-	{ "qcom,kgsl-smmu-v1", _kgsl_iommu_probe },
 	{ "qcom,kgsl-smmu-v2", _kgsl_iommu_probe },
 };
 
