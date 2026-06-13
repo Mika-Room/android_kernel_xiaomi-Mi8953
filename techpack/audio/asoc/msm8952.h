@@ -21,6 +21,9 @@
 #include "codecs/wsa881x-analog.h"
 #include <linux/regulator/consumer.h>
 #include <linux/regulator/driver.h>
+#if IS_ENABLED(CONFIG_MACH_XIAOMI_MSM8953)
+#include <xiaomi-msm8953/mach.h>
+#endif
 
 
 #define BTSCO_RATE_8KHZ 8000
@@ -62,6 +65,12 @@ struct msm_asoc_mach_data {
 	int ext_pa;
 	int us_euro_gpio;
 	int spk_ext_pa_gpio;
+#if IS_ENABLED(CONFIG_MACH_XIAOMI_YSL)
+	int spk_ext_pa_gpio_lc;
+	struct delayed_work pa_gpio_work;
+	struct delayed_work pa_gpio_work_close;
+	unsigned char pa_is_on;
+#endif
 	int mclk_freq;
 	bool native_clk_set;
 	int lb_mode;
