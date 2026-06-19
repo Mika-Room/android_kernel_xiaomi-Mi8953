@@ -4,3 +4,4 @@ config MACH_XIAOMI_MSM8953
 	  Say Y here to enable support for Xiaomi MSM8953 platform.
 
 source "techpack/xiaomi-msm8953/mach/Kconfig"
+source "techpack/xiaomi-msm8953/touchscreen/Kconfig"
