@@ -47,7 +47,7 @@
     qcom,pmi8940@2 {  
    		qpnp_smbcharger: qcom,qpnp-smbcharger {
 			spmi-dev-container;
-			compatible = "qcom,qpnp-smbcharger-mi8953";
+			compatible = "qcom,qpnp-smbcharger";
 			#address-cells = <1>;
 			#size-cells = <1>;
 
@@ -82,13 +82,11 @@
 			qcom,battery-data = <&mtp_batterydata>;
 	    	/delete-property/ qcom,chg-led-sw-controls;
 			/delete-property/ qcom,chg-led-support;
-			io-channels = <&pmi8940_vadc VADC_VCHG_SNS_LEGACY>;
-			io-channel-names = "vchg_sns";
 		};
 	
 		qcom_fg: qcom,fg {
 			spmi-dev-container;
-			compatible = "qcom,qpnp-fg-mi8953";
+			compatible = "qcom,qpnp-fg";
 			#address-cells = <1>;
 			#size-cells = <1>;
 			status = "okay";
