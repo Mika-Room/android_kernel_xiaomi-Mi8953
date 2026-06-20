@@ -1558,7 +1558,7 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	btn_low[4] = 500;
 	btn_high[4] = 500;
 
-#if IS_ENABLED(CONFIG_MACH_XIAOMI_TITANIUM)
+#if IS_ENABLED(CONFIG_MACH_XIAOMI_MSM8953)
 	switch (xiaomi_msm8953_mach_get()) {
 		case XIAOMI_MSM8953_MACH_YSL:
 			btn_low[0] = 100;
@@ -3080,7 +3080,7 @@ static struct snd_soc_card *msm8952_populate_sndcard_dailinks(
 		}
 	}
 
-#if IS_ENABLED(CONFIG_MACH_XIAOMI_TITANIUM)
+#if IS_ENABLED(CONFIG_MACH_XIAOMI_MSM8953)
 	if (xiaomi_msm8953_mach_get() == XIAOMI_MSM8953_MACH_VINCE) {
 		for (i = 0; i < len1; i++) {
 			switch (msm8952_dai[i].id) {
