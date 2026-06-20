@@ -2742,7 +2742,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.name = "MultiMedia33",
 		.probe = fe_dai_probe,
 	},
-#ifdef CONFIG_MACH_XIAOMI_VINCE
+#if IS_ENABLED(CONFIG_MACH_XIAOMI_VINCE)
 	{
 		.capture = {
 			.stream_name = "Quinary MI2S_TX Hostless Capture",

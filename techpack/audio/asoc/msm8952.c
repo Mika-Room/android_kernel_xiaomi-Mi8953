@@ -2393,7 +2393,7 @@ static struct snd_soc_dai_link msm8952_dai[] = {
 		.ops = &msm8952_mi2s_be_ops,
 		.ignore_suspend = 1,
 	},
-#ifdef CONFIG_MACH_XIAOMI_VINCE
+#if IS_ENABLED(CONFIG_MACH_XIAOMI_VINCE)
 	{/* hw:x,43 */
 		.name = "Quinary MI2S TX_Hostless",
 		.stream_name = "Quinary MI2S_TX Hostless Capture",
@@ -2662,13 +2662,8 @@ static struct snd_soc_dai_link msm8952_dai[] = {
 		.stream_name = "Quinary MI2S Capture",
 		.cpu_dai_name = "msm-dai-q6-mi2s.4",
 		.platform_name = "msm-pcm-routing",
-#ifdef CONFIG_MACH_XIAOMI_VINCE
-		.codec_dai_name = "tas2557 ASI1",
-		.codec_name = "tas2557.2-004c",
-#else
 		.codec_dai_name = "snd-soc-dummy-dai",
 		.codec_name = "snd-soc-dummy",
-#endif
 		.no_pcm = 1,
 		.dpcm_capture = 1,
 		.id = MSM_BACKEND_DAI_QUINARY_MI2S_TX,
@@ -2727,13 +2722,8 @@ static struct snd_soc_dai_link msm8952_quin_dai_link[] = {
 		.stream_name = "Quinary MI2S Playback",
 		.cpu_dai_name = "msm-dai-q6-mi2s.4",
 		.platform_name = "msm-pcm-routing",
-#ifdef CONFIG_MACH_XIAOMI_VINCE
-		.codec_dai_name = "tas2557 ASI1",
-		.codec_name = "tas2557.2-004c",
-#else
 		.codec_dai_name = "snd-soc-dummy-dai",
 		.codec_name = "snd-soc-dummy",
-#endif
 		.no_pcm = 1,
 		.dpcm_playback = 1,
 		.id = MSM_BACKEND_DAI_QUINARY_MI2S_RX,
@@ -3045,6 +3035,35 @@ static struct snd_soc_card *msm8952_populate_sndcard_dailinks(
 				msm8952_dai[i].cpu_dai_name = "VoWLAN";
 		}
 	}
+
+#if IS_ENABLED(CONFIG_MACH_XIAOMI_TITANIUM)
+	if (xiaomi_msm8953_mach_get() == XIAOMI_MSM8953_MACH_VINCE) {
+		for (i = 0; i < len1; i++) {
+			switch (msm8952_dai[i].id) {
+			case MSM_BACKEND_DAI_QUINARY_MI2S_TX:
+				msm8952_dai[i].codec_dai_name = "tas2557 ASI1";
+				msm8952_dai[i].codec_name = "tas2557.2-004c";
+				break;
+			default:
+				break;
+			}
+		}
+		{
+			int j;
+			for (j = 0; j < ARRAY_SIZE(msm8952_quin_dai_link); j++) {
+				switch (msm8952_quin_dai_link[j].id) {
+				case MSM_BACKEND_DAI_QUINARY_MI2S_RX:
+					msm8952_quin_dai_link[j].codec_dai_name = "tas2557 ASI1";
+					msm8952_quin_dai_link[j].codec_name = "tas2557.2-004c";
+					break;
+				default:
+					break;
+				}
+			}
+		}
+	}
+#endif
+
 	memcpy(msm8952_dai_links, msm8952_dai, sizeof(msm8952_dai));
 	dailink = msm8952_dai_links;
 	if (of_property_read_bool(dev->of_node,
