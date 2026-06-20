@@ -55,8 +55,8 @@
 #include "mdss_mdp.h"
 #include "mdp3_ctrl.h"
 #include "mdss_sync.h"
-#if IS_ENABLED(CONFIG_MACH_XIAOMI_TITANIUM)
-#include <xiaomi-titanium/mach.h>
+#if IS_ENABLED(CONFIG_MACH_XIAOMI_MSM8953)
+#include <xiaomi-msm8953/mach.h>
 #endif
 
 #include "mdss_livedisplay.h"
@@ -2206,7 +2206,7 @@ static int mdss_fb_blank(int blank_mode, struct fb_info *info)
 	s64 actual_time;
 
 	start = ktime_get();
-	
+
 	if ((info == prim_fbi) && (blank_mode == FB_BLANK_UNBLANK) &&
 		atomic_read(&prim_panel_is_on)) {
 		atomic_set(&prim_panel_is_on, false);
