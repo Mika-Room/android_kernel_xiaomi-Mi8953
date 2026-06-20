@@ -16,6 +16,9 @@
 #include "msm_sd.h"
 #include "msm_actuator.h"
 #include "msm_cci.h"
+#if IS_ENABLED(CONFIG_MACH_XIAOMI_MSM8953)
+#include <xiaomi-msm8953/mach.h>
+#endif
 
 DEFINE_MSM_MUTEX(msm_actuator_mutex);
 
@@ -599,6 +602,14 @@ static int32_t msm_actuator_move_focus(
 		(a_ctrl->step_position_table[dest_step_pos] ==
 		a_ctrl->step_position_table[a_ctrl->curr_step_pos])))
 		return rc;
+
+#if IS_ENABLED(CONFIG_MACH_XIAOMI_VINCE)
+	if (xiaomi_msm8953_mach_get() == XIAOMI_MSM8953_MACH_VINCE) {
+		if (a_ctrl->step_position_table[dest_step_pos] ==
+			a_ctrl->step_position_table[a_ctrl->curr_step_pos])
+			return rc;
+	}
+#endif
 
 	if ((sign_dir > MSM_ACTUATOR_MOVE_SIGNED_NEAR) ||
 		(sign_dir < MSM_ACTUATOR_MOVE_SIGNED_FAR)) {
