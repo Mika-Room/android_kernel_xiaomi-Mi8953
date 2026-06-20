@@ -1,6 +1,6 @@
 #include <linux/types.h>
 
-extern int gesture_incall;
+bool gesture_incall = false;
 
 static void _techpack_stub(void)
 {
