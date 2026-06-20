@@ -131,7 +131,7 @@ ifdef CONFIG_SND_SOC_MSM8909
 	PLATFORM_OBJS += voice_svc.o
 endif
 
-CONFIG_MACH_XIAOMI_YSL
+ifdef CONFIG_MACH_XIAOMI_YSL
 MACHINE_OBJS += spk_ext_pa_mtp.o
 endif
 
