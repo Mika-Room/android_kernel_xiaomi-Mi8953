@@ -11,7 +11,7 @@
 };
 
 &qpnp_smbcharger {
-	compatible = "qcom,qpnp-smbcharger-mi8953";
+	compatible = "qcom,qpnp-smbcharger";
 
 	qcom,iterm-ma = <200>;
     qcom,float-voltage-mv = <4400>;
@@ -27,13 +27,11 @@
 	/delete-property/ qcom,parallel-allowed-lowering-ma;
 	/delete-property/ qcom,external-typec;
 	/delete-property/ qcom,typec-psy-name;
-	io-channels = <&pmi8950_vadc VADC_VCHG_SNS_LEGACY>;
-	io-channel-names = "vchg_sns";
     status = "okay";
 };
 
 &qpnp_fg {
-	compatible = "qcom,qpnp-fg-mi8953";
+	compatible = "qcom,qpnp-fg";
 
     /delete-property/ qcom,resume-soc;
 	qcom,resume-soc-raw = <254>;
