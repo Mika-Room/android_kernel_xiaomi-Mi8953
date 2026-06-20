@@ -354,4 +354,19 @@ config ARCH_ZYNQMP
 	help
 	  This enables support for Xilinx ZynqMP Family
 
+config TAS2557_REGMAP
+	bool  "Texas Audio TAS2557"
+	help
+	  Support for the Xiaomi Redmi 5 Plus platform.
+
+config TAS2557_CODEC
+	bool  "Texas Audio TAS2557"
+	help
+	  Support for the Xiaomi Redmi 5 Plus platform.
+
+config TAS2557_MISC
+	bool  "Texas Audio TAS2557"
+	help
+	  Support for the Xiaomi Redmi 5 Plus platform.
+
 endmenu
