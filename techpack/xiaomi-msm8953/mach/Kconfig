@@ -43,6 +43,13 @@ config MACH_XIAOMI_TISSOT
 	help
 	  Support for Xiaomi Mi a1 (tissot).
 
+config MACH_XIAOMI_TIFFANY
+	bool "Xiaomi Mi 5X (tiffany)"
+	depends on ARCH_MSM8953
+	select MACH_FAMILY_XIAOMI_QRD_MSM8953
+	help
+	  Support for Xiaomi Mi 5X (tiffany).
+
 config MACH_XIAOMI_MIDO
 	bool "Xiaomi Redmi 4 (mido)"
 	help
