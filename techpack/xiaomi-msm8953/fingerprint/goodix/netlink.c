@@ -10,10 +10,10 @@
 #define MAX_MSGSIZE 4 * 1024
 int stringlength(char *s);
 void sendnlmsg(char *message);
-int pid;
-int err;
-struct sock *nl_sk = NULL;
-int flag = 0;
+static int pid;
+static int err;
+static struct sock *nl_sk = NULL;
+static int flag = 0;
 
 struct gf_uk_channel {
 	int channel_id;
@@ -45,7 +45,7 @@ void sendnlmsg(char *message)
 	netlink_unicast(nl_sk, skb_1, pid, MSG_DONTWAIT);
 }
 
-void nl_data_ready(struct sk_buff *__skb)
+static void nl_data_ready(struct sk_buff *__skb)
 {
 	struct sk_buff *skb;
 	struct nlmsghdr *nlh;

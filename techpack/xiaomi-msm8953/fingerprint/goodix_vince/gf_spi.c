@@ -82,7 +82,7 @@
 #define GF_DOUBLE_CLICK_KEY  115
 #define GF_LONG_PRESS_KEY  217
 
-struct gf_key_map key_map[] = { { "POWER", KEY_POWER }, { "HOME", KEY_HOME }, {
+static struct gf_key_map key_map[] = { { "POWER", KEY_POWER }, { "HOME", KEY_HOME }, {
 		"MENU", KEY_MENU }, { "BACK", KEY_BACK }, { "UP", KEY_UP }, { "DOWN",
 KEY_DOWN }, { "LEFT", KEY_LEFT }, { "RIGHT", KEY_RIGHT }, { "FORCE",
 KEY_F9 }, { "CLICK", KEY_F19 }, };
