@@ -82,99 +82,93 @@ static struct v4l2_subdev_info msm_sensor_driver_subdev_info[] = {
 };
 
 static int32_t msm_sensor_driver_create_i2c_v4l_subdev
-			(struct msm_sensor_ctrl_t *s_ctrl)
+            (struct msm_sensor_ctrl_t *s_ctrl)
 {
-	int32_t rc = 0;
-	uint32_t session_id = 0;
-	struct i2c_client *client = s_ctrl->sensor_i2c_client->client;
+    int32_t rc = 0;
+    uint32_t session_id = 0;
+    struct i2c_client *client = s_ctrl->sensor_i2c_client->client;
+    int mach = xiaomi_msm8953_mach_get();
 
-	CDBG("%s %s I2c probe succeeded\n", __func__, client->name);
-#ifndef CONFIG_MACH_XIAOMI_MIDO
-	if (0 == s_ctrl->bypass_video_node_creation) {
-#endif
-		rc = camera_init_v4l2(&client->dev, &session_id);
-		if (rc < 0) {
-			pr_err("failed: camera_init_i2c_v4l2 rc %d", rc);
-			return rc;
-		}
-#ifndef CONFIG_MACH_XIAOMI_MIDO
-	}
-#endif
+    CDBG("%s %s I2c probe succeeded\n", __func__, client->name);
+    if (mach == XIAOMI_MSM8953_MACH_MIDO || s_ctrl->bypass_video_node_creation == 0) {
+        rc = camera_init_v4l2(&client->dev, &session_id);
+        if (rc < 0) {
+            pr_err("failed: camera_init_i2c_v4l2 rc %d", rc);
+            return rc;
+        }
+    }
 
-	CDBG("%s rc %d session_id %d\n", __func__, rc, session_id);
-	snprintf(s_ctrl->msm_sd.sd.name,
-		sizeof(s_ctrl->msm_sd.sd.name), "%s",
-		s_ctrl->sensordata->sensor_name);
-	v4l2_i2c_subdev_init(&s_ctrl->msm_sd.sd, client,
-		s_ctrl->sensor_v4l2_subdev_ops);
-	v4l2_set_subdevdata(&s_ctrl->msm_sd.sd, client);
-	s_ctrl->msm_sd.sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
-	media_entity_pads_init(&s_ctrl->msm_sd.sd.entity, 0, NULL);
-	s_ctrl->msm_sd.sd.entity.group_id = MSM_CAMERA_SUBDEV_SENSOR;
-	s_ctrl->msm_sd.sd.entity.name =	s_ctrl->msm_sd.sd.name;
-	s_ctrl->sensordata->sensor_info->session_id = session_id;
-	s_ctrl->msm_sd.close_seq = MSM_SD_CLOSE_2ND_CATEGORY | 0x3;
-	rc = msm_sd_register(&s_ctrl->msm_sd);
-	if (rc < 0) {
-		pr_err("failed: msm_sd_register rc %d", rc);
-		return rc;
-	}
-	msm_sensor_v4l2_subdev_fops = v4l2_subdev_fops;
+    CDBG("%s rc %d session_id %d\n", __func__, rc, session_id);
+    snprintf(s_ctrl->msm_sd.sd.name,
+        sizeof(s_ctrl->msm_sd.sd.name), "%s",
+        s_ctrl->sensordata->sensor_name);
+    v4l2_i2c_subdev_init(&s_ctrl->msm_sd.sd, client,
+        s_ctrl->sensor_v4l2_subdev_ops);
+    v4l2_set_subdevdata(&s_ctrl->msm_sd.sd, client);
+    s_ctrl->msm_sd.sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
+    media_entity_pads_init(&s_ctrl->msm_sd.sd.entity, 0, NULL);
+    s_ctrl->msm_sd.sd.entity.group_id = MSM_CAMERA_SUBDEV_SENSOR;
+    s_ctrl->msm_sd.sd.entity.name = s_ctrl->msm_sd.sd.name;
+    s_ctrl->sensordata->sensor_info->session_id = session_id;
+    s_ctrl->msm_sd.close_seq = MSM_SD_CLOSE_2ND_CATEGORY | 0x3;
+    rc = msm_sd_register(&s_ctrl->msm_sd);
+    if (rc < 0) {
+        pr_err("failed: msm_sd_register rc %d", rc);
+        return rc;
+    }
+    msm_sensor_v4l2_subdev_fops = v4l2_subdev_fops;
 #ifdef CONFIG_COMPAT
-	msm_sensor_v4l2_subdev_fops.compat_ioctl32 =
-		msm_sensor_subdev_fops_ioctl;
+    msm_sensor_v4l2_subdev_fops.compat_ioctl32 =
+        msm_sensor_subdev_fops_ioctl;
 #endif
-	s_ctrl->msm_sd.sd.devnode->fops =
-		&msm_sensor_v4l2_subdev_fops;
-	CDBG("%s:%d\n", __func__, __LINE__);
-	return rc;
+    s_ctrl->msm_sd.sd.devnode->fops =
+        &msm_sensor_v4l2_subdev_fops;
+    CDBG("%s:%d\n", __func__, __LINE__);
+    return rc;
 }
 
 static int32_t msm_sensor_driver_create_v4l_subdev
-			(struct msm_sensor_ctrl_t *s_ctrl)
+            (struct msm_sensor_ctrl_t *s_ctrl)
 {
-	int32_t rc = 0;
-	uint32_t session_id = 0;
+    int32_t rc = 0;
+    uint32_t session_id = 0;
+    int mach = xiaomi_msm8953_mach_get();
 
-#ifndef CONFIG_MACH_XIAOMI_MIDO
-	if (0 == s_ctrl->bypass_video_node_creation) {
-#endif
-		rc = camera_init_v4l2(&s_ctrl->pdev->dev, &session_id);
-		if (rc < 0) {
-			pr_err("failed: camera_init_v4l2 rc %d", rc);
-			return rc;
-		}
-#ifndef CONFIG_MACH_XIAOMI_MIDO
-	}
-#endif
+    if (mach == XIAOMI_MSM8953_MACH_MIDO || s_ctrl->bypass_video_node_creation == 0) {
+        rc = camera_init_v4l2(&s_ctrl->pdev->dev, &session_id);
+        if (rc < 0) {
+            pr_err("failed: camera_init_v4l2 rc %d", rc);
+            return rc;
+        }
+    }
 
-	CDBG("rc %d session_id %d", rc, session_id);
-	s_ctrl->sensordata->sensor_info->session_id = session_id;
+    CDBG("rc %d session_id %d", rc, session_id);
+    s_ctrl->sensordata->sensor_info->session_id = session_id;
 
-	/* Create /dev/v4l-subdevX device */
-	v4l2_subdev_init(&s_ctrl->msm_sd.sd, s_ctrl->sensor_v4l2_subdev_ops);
-	snprintf(s_ctrl->msm_sd.sd.name, sizeof(s_ctrl->msm_sd.sd.name), "%s",
-		s_ctrl->sensordata->sensor_name);
-	v4l2_set_subdevdata(&s_ctrl->msm_sd.sd, s_ctrl->pdev);
-	s_ctrl->msm_sd.sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
-	media_entity_pads_init(&s_ctrl->msm_sd.sd.entity, 0, NULL);
-	s_ctrl->msm_sd.sd.entity.group_id = MSM_CAMERA_SUBDEV_SENSOR;
-	s_ctrl->msm_sd.sd.entity.name = s_ctrl->msm_sd.sd.name;
-	s_ctrl->msm_sd.close_seq = MSM_SD_CLOSE_2ND_CATEGORY | 0x3;
-	rc = msm_sd_register(&s_ctrl->msm_sd);
-	if (rc < 0) {
-		pr_err("failed: msm_sd_register rc %d", rc);
-		return rc;
-	}
-	msm_cam_copy_v4l2_subdev_fops(&msm_sensor_v4l2_subdev_fops);
+    /* Create /dev/v4l-subdevX device */
+    v4l2_subdev_init(&s_ctrl->msm_sd.sd, s_ctrl->sensor_v4l2_subdev_ops);
+    snprintf(s_ctrl->msm_sd.sd.name, sizeof(s_ctrl->msm_sd.sd.name), "%s",
+        s_ctrl->sensordata->sensor_name);
+    v4l2_set_subdevdata(&s_ctrl->msm_sd.sd, s_ctrl->pdev);
+    s_ctrl->msm_sd.sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
+    media_entity_pads_init(&s_ctrl->msm_sd.sd.entity, 0, NULL);
+    s_ctrl->msm_sd.sd.entity.group_id = MSM_CAMERA_SUBDEV_SENSOR;
+    s_ctrl->msm_sd.sd.entity.name = s_ctrl->msm_sd.sd.name;
+    s_ctrl->msm_sd.close_seq = MSM_SD_CLOSE_2ND_CATEGORY | 0x3;
+    rc = msm_sd_register(&s_ctrl->msm_sd);
+    if (rc < 0) {
+        pr_err("failed: msm_sd_register rc %d", rc);
+        return rc;
+    }
+    msm_cam_copy_v4l2_subdev_fops(&msm_sensor_v4l2_subdev_fops);
 #ifdef CONFIG_COMPAT
-	msm_sensor_v4l2_subdev_fops.compat_ioctl32 =
-		msm_sensor_subdev_fops_ioctl;
+    msm_sensor_v4l2_subdev_fops.compat_ioctl32 =
+        msm_sensor_subdev_fops_ioctl;
 #endif
-	s_ctrl->msm_sd.sd.devnode->fops =
-		&msm_sensor_v4l2_subdev_fops;
+    s_ctrl->msm_sd.sd.devnode->fops =
+        &msm_sensor_v4l2_subdev_fops;
 
-	return rc;
+    return rc;
 }
 
 static int32_t msm_sensor_fill_eeprom_subdevid_by_name(
@@ -813,305 +807,296 @@ static uint16_t fusion_read_id_ov13855(struct msm_sensor_ctrl_t *s_ctrl)
 
 /* static function definition */
 int32_t msm_sensor_driver_probe(void *setting,
-	struct msm_sensor_info_t *probed_info, char *entity_name)
+    struct msm_sensor_info_t *probed_info, char *entity_name)
 {
-	int32_t                              rc = 0;
-	struct msm_sensor_ctrl_t            *s_ctrl = NULL;
-	struct msm_camera_cci_client        *cci_client = NULL;
-	struct msm_camera_sensor_slave_info *slave_info = NULL;
-	struct msm_camera_slave_info        *camera_info = NULL;
+    int32_t                               rc = 0;
+    struct msm_sensor_ctrl_t            *s_ctrl = NULL;
+    struct msm_camera_cci_client        *cci_client = NULL;
+    struct msm_camera_sensor_slave_info *slave_info = NULL;
+    struct msm_camera_slave_info        *camera_info = NULL;
 
-	unsigned long                        mount_pos = 0;
-	uint32_t                             is_yuv;
+    unsigned long                        mount_pos = 0;
+    uint32_t                             is_yuv;
+    int mach = xiaomi_msm8953_mach_get();
 
-	/* Validate input parameters */
-	if (!setting) {
-		pr_err("failed: slave_info %pK", setting);
-		return -EINVAL;
-	}
+    /* Validate input parameters */
+    if (!setting) {
+        pr_err("failed: slave_info %pK", setting);
+        return -EINVAL;
+    }
 
-	/* Allocate memory for slave info */
-	slave_info = kzalloc(sizeof(*slave_info), GFP_KERNEL);
-	if (!slave_info)
-		return -ENOMEM;
+    /* Allocate memory for slave info */
+    slave_info = kzalloc(sizeof(*slave_info), GFP_KERNEL);
+    if (!slave_info)
+        return -ENOMEM;
 #ifdef CONFIG_COMPAT
-	if (is_compat_task()) {
-		struct msm_camera_sensor_slave_info32 *slave_info32 =
-			kzalloc(sizeof(*slave_info32), GFP_KERNEL);
-		if (!slave_info32) {
-			pr_err("failed: no memory for slave_info32 %pK\n",
-				slave_info32);
-			rc = -ENOMEM;
-			goto free_slave_info;
-		}
-		if (copy_from_user((void *)slave_info32, setting,
-			sizeof(*slave_info32))) {
-				pr_err("failed: copy_from_user");
-				rc = -EFAULT;
-				kfree(slave_info32);
-				goto free_slave_info;
-			}
+    if (is_compat_task()) {
+        struct msm_camera_sensor_slave_info32 *slave_info32 =
+            kzalloc(sizeof(*slave_info32), GFP_KERNEL);
+        if (!slave_info32) {
+            pr_err("failed: no memory for slave_info32 %pK\n",
+                slave_info32);
+            rc = -ENOMEM;
+            goto free_slave_info;
+        }
+        if (copy_from_user((void *)slave_info32, setting,
+            sizeof(*slave_info32))) {
+                pr_err("failed: copy_from_user");
+                rc = -EFAULT;
+                kfree(slave_info32);
+                goto free_slave_info;
+            }
 
-		strlcpy(slave_info->actuator_name, slave_info32->actuator_name,
-			sizeof(slave_info->actuator_name));
+        strlcpy(slave_info->actuator_name, slave_info32->actuator_name,
+            sizeof(slave_info->actuator_name));
 
-		strlcpy(slave_info->eeprom_name, slave_info32->eeprom_name,
-			sizeof(slave_info->eeprom_name));
+        strlcpy(slave_info->eeprom_name, slave_info32->eeprom_name,
+            sizeof(slave_info->eeprom_name));
 
-		strlcpy(slave_info->sensor_name, slave_info32->sensor_name,
-			sizeof(slave_info->sensor_name));
+        strlcpy(slave_info->sensor_name, slave_info32->sensor_name,
+            sizeof(slave_info->sensor_name));
 
-		strlcpy(slave_info->ois_name, slave_info32->ois_name,
-			sizeof(slave_info->ois_name));
+        strlcpy(slave_info->ois_name, slave_info32->ois_name,
+            sizeof(slave_info->ois_name));
 
-		strlcpy(slave_info->flash_name, slave_info32->flash_name,
-			sizeof(slave_info->flash_name));
+        strlcpy(slave_info->flash_name, slave_info32->flash_name,
+            sizeof(slave_info->flash_name));
 
-		slave_info->addr_type = slave_info32->addr_type;
-		slave_info->camera_id = slave_info32->camera_id;
+        slave_info->addr_type = slave_info32->addr_type;
+        slave_info->camera_id = slave_info32->camera_id;
 
-		slave_info->i2c_freq_mode = slave_info32->i2c_freq_mode;
-		slave_info->sensor_id_info.sensor_id_reg_addr =
-			slave_info32->sensor_id_info.sensor_id_reg_addr;
-		slave_info->sensor_id_info.sensor_id_mask =
-			slave_info32->sensor_id_info.sensor_id_mask;
-		slave_info->sensor_id_info.sensor_id =
-				slave_info32->sensor_id_info.sensor_id;
+        slave_info->i2c_freq_mode = slave_info32->i2c_freq_mode;
+        slave_info->sensor_id_info.sensor_id_reg_addr =
+            slave_info32->sensor_id_info.sensor_id_reg_addr;
+        slave_info->sensor_id_info.sensor_id_mask =
+            slave_info32->sensor_id_info.sensor_id_mask;
+        slave_info->sensor_id_info.sensor_id =
+                slave_info32->sensor_id_info.sensor_id;
 
-		slave_info->slave_addr = slave_info32->slave_addr;
-		slave_info->power_setting_array.size =
-			slave_info32->power_setting_array.size;
-		slave_info->power_setting_array.size_down =
-			slave_info32->power_setting_array.size_down;
-		slave_info->power_setting_array.size_down =
-			slave_info32->power_setting_array.size_down;
-		slave_info->power_setting_array.power_setting =
-			compat_ptr(slave_info32->
-				power_setting_array.power_setting);
-		slave_info->power_setting_array.power_down_setting =
-			compat_ptr(slave_info32->
-				power_setting_array.power_down_setting);
-		slave_info->sensor_init_params =
-			slave_info32->sensor_init_params;
-		slave_info->output_format =
-			slave_info32->output_format;
-#ifndef CONFIG_MACH_XIAOMI_MIDO
-		slave_info->bypass_video_node_creation =
-			!!slave_info32->bypass_video_node_creation;
+        slave_info->slave_addr = slave_info32->slave_addr;
+        slave_info->power_setting_array.size =
+            slave_info32->power_setting_array.size;
+        slave_info->power_setting_array.size_down =
+            slave_info32->power_setting_array.size_down;
+        slave_info->power_setting_array.size_down =
+            slave_info32->power_setting_array.size_down;
+        slave_info->power_setting_array.power_setting =
+            compat_ptr(slave_info32->
+                power_setting_array.power_setting);
+        slave_info->power_setting_array.power_down_setting =
+            compat_ptr(slave_info32->
+                power_setting_array.power_down_setting);
+        slave_info->sensor_init_params =
+            slave_info32->sensor_init_params;
+        slave_info->output_format =
+            slave_info32->output_format;
+        if (mach != XIAOMI_MSM8953_MACH_MIDO) {
+            slave_info->bypass_video_node_creation =
+                !!slave_info32->bypass_video_node_creation;
+        } else {
+            slave_info->bypass_video_node_creation = 0;
+        }
+        kfree(slave_info32);
+    } else
 #endif
-		kfree(slave_info32);
-	} else
-#endif
-	{
-		if (copy_from_user(slave_info,
-					(void *)setting, sizeof(*slave_info))) {
-			pr_err("failed: copy_from_user");
-			rc = -EFAULT;
-			goto free_slave_info;
-		}
-	}
+    {
+        if (copy_from_user(slave_info,
+                    (void *)setting, sizeof(*slave_info))) {
+            pr_err("failed: copy_from_user");
+            rc = -EFAULT;
+            goto free_slave_info;
+        }
+    }
 
-	if (strlen(slave_info->sensor_name) >= MAX_SENSOR_NAME ||
-		strlen(slave_info->eeprom_name) >= MAX_SENSOR_NAME ||
-		strlen(slave_info->actuator_name) >= MAX_SENSOR_NAME ||
-		strlen(slave_info->ois_name) >= MAX_SENSOR_NAME) {
-		pr_err("failed: name len greater than 32.\n");
-		pr_err("sensor name len:%zu, eeprom name len: %zu.\n",
-			strlen(slave_info->sensor_name),
-			strlen(slave_info->eeprom_name));
-		pr_err("actuator name len: %zu, ois name len:%zu.\n",
-			strlen(slave_info->actuator_name),
-			strlen(slave_info->ois_name));
-		rc = -EINVAL;
-		goto free_slave_info;
-	}
+    if (strlen(slave_info->sensor_name) >= MAX_SENSOR_NAME ||
+        strlen(slave_info->eeprom_name) >= MAX_SENSOR_NAME ||
+        strlen(slave_info->actuator_name) >= MAX_SENSOR_NAME ||
+        strlen(slave_info->ois_name) >= MAX_SENSOR_NAME) {
+        pr_err("failed: name len greater than 32.\n");
+        pr_err("sensor name len:%zu, eeprom name len: %zu.\n",
+            strlen(slave_info->sensor_name),
+            strlen(slave_info->eeprom_name));
+        pr_err("actuator name len: %zu, ois name len:%zu.\n",
+            strlen(slave_info->actuator_name),
+            strlen(slave_info->ois_name));
+        rc = -EINVAL;
+        goto free_slave_info;
+    }
 
-	/* Print slave info */
-	CDBG("camera id %d Slave addr 0x%X addr_type %d\n",
-		slave_info->camera_id, slave_info->slave_addr,
-		slave_info->addr_type);
-	CDBG("sensor_id_reg_addr 0x%X sensor_id 0x%X sensor id mask %d",
-		slave_info->sensor_id_info.sensor_id_reg_addr,
-		slave_info->sensor_id_info.sensor_id,
-		slave_info->sensor_id_info.sensor_id_mask);
-	CDBG("power up size %d power down size %d\n",
-		slave_info->power_setting_array.size,
-		slave_info->power_setting_array.size_down);
-	CDBG("position %d",
-		slave_info->sensor_init_params.position);
-	CDBG("mount %d",
-		slave_info->sensor_init_params.sensor_mount_angle);
-#ifndef CONFIG_MACH_XIAOMI_MIDO
-	CDBG("bypass video node creation %d",
-		slave_info->bypass_video_node_creation);
-#endif
-	/* Validate camera id */
-	if (slave_info->camera_id >= MAX_CAMERAS) {
-		pr_err("failed: invalid camera id %d max %d",
-			slave_info->camera_id, MAX_CAMERAS);
-		rc = -EINVAL;
-		goto free_slave_info;
-	}
+    /* Print slave info */
+    CDBG("camera id %d Slave addr 0x%X addr_type %d\n",
+        slave_info->camera_id, slave_info->slave_addr,
+        slave_info->addr_type);
+    CDBG("sensor_id_reg_addr 0x%X sensor_id 0x%X sensor id mask %d",
+        slave_info->sensor_id_info.sensor_id_reg_addr,
+        slave_info->sensor_id_info.sensor_id,
+        slave_info->sensor_id_info.sensor_id_mask);
+    CDBG("power up size %d power down size %d\n",
+        slave_info->power_setting_array.size,
+        slave_info->power_setting_array.size_down);
+    CDBG("position %d",
+        slave_info->sensor_init_params.position);
+    CDBG("mount %d",
+        slave_info->sensor_init_params.sensor_mount_angle);
+    if (mach != XIAOMI_MSM8953_MACH_MIDO) {
+        CDBG("bypass video node creation %d",
+            slave_info->bypass_video_node_creation);
+    }
 
-	/* Extract s_ctrl from camera id */
-	s_ctrl = g_sctrl[slave_info->camera_id];
-	if (!s_ctrl) {
-		pr_err("failed: s_ctrl %pK for camera_id %d", s_ctrl,
-			slave_info->camera_id);
-		rc = -EINVAL;
-		goto free_slave_info;
-	}
+    /* Validate camera id */
+    if (slave_info->camera_id >= MAX_CAMERAS) {
+        pr_err("failed: invalid camera id %d max %d",
+            slave_info->camera_id, MAX_CAMERAS);
+        rc = -EINVAL;
+        goto free_slave_info;
+    }
 
-	CDBG("s_ctrl[%d] %pK", slave_info->camera_id, s_ctrl);
+    /* Extract s_ctrl from camera id */
+    s_ctrl = g_sctrl[slave_info->camera_id];
+    if (!s_ctrl) {
+        pr_err("failed: s_ctrl %pK for camera_id %d", s_ctrl,
+            slave_info->camera_id);
+        rc = -EINVAL;
+        goto free_slave_info;
+    }
 
-	if (s_ctrl->is_probe_succeed == 1) {
-		/*
-		 * Different sensor on this camera slot has been connected
-		 * and probe already succeeded for that sensor. Ignore this
-		 * probe
-		 */
-		if (slave_info->sensor_id_info.sensor_id ==
-			s_ctrl->sensordata->cam_slave_info->
-				sensor_id_info.sensor_id &&
-			!(strcmp(slave_info->sensor_name,
-			s_ctrl->sensordata->cam_slave_info->sensor_name))) {
-			pr_err("slot%d: sensor name: %s sensor id%d already probed\n",
-				slave_info->camera_id,
-				slave_info->sensor_name,
-				s_ctrl->sensordata->cam_slave_info->
-					sensor_id_info.sensor_id);
-			msm_sensor_fill_sensor_info(s_ctrl,
-				probed_info, entity_name);
-		} else
-			pr_err("slot %d has some other sensor\n",
-				slave_info->camera_id);
+    CDBG("s_ctrl[%d] %pK", slave_info->camera_id, s_ctrl);
 
-		rc = 0;
-		goto free_slave_info;
-	}
+    if (s_ctrl->is_probe_succeed == 1) {
+        if (slave_info->sensor_id_info.sensor_id ==
+            s_ctrl->sensordata->cam_slave_info->
+                sensor_id_info.sensor_id &&
+            !(strcmp(slave_info->sensor_name,
+            s_ctrl->sensordata->cam_slave_info->sensor_name))) {
+            pr_err("slot%d: sensor name: %s sensor id%d already probed\n",
+                slave_info->camera_id,
+                slave_info->sensor_name,
+                s_ctrl->sensordata->cam_slave_info->
+                    sensor_id_info.sensor_id);
+            msm_sensor_fill_sensor_info(s_ctrl,
+                probed_info, entity_name);
+        } else
+            pr_err("slot %d has some other sensor\n",
+                slave_info->camera_id);
 
-	if (slave_info->power_setting_array.size == 0 &&
-		slave_info->slave_addr == 0) {
-		s_ctrl->is_csid_tg_mode = 1;
-		goto CSID_TG;
-	}
+        rc = 0;
+        goto free_slave_info;
+    }
 
-	rc = msm_sensor_get_power_settings(setting, slave_info,
-		&s_ctrl->sensordata->power_info);
-	if (rc < 0) {
-		pr_err("failed");
-		goto free_slave_info;
-	}
+    if (slave_info->power_setting_array.size == 0 &&
+        slave_info->slave_addr == 0) {
+        s_ctrl->is_csid_tg_mode = 1;
+        goto CSID_TG;
+    }
 
+    rc = msm_sensor_get_power_settings(setting, slave_info,
+        &s_ctrl->sensordata->power_info);
+    if (rc < 0) {
+        pr_err("failed");
+        goto free_slave_info;
+    }
 
-	camera_info = kzalloc(sizeof(struct msm_camera_slave_info), GFP_KERNEL);
-	if (!camera_info)
-		goto free_power_settings;
+    camera_info = kzalloc(sizeof(struct msm_camera_slave_info), GFP_KERNEL);
+    if (!camera_info)
+        goto free_power_settings;
 
-	s_ctrl->sensordata->slave_info = camera_info;
+    s_ctrl->sensordata->slave_info = camera_info;
 
-	/* Fill sensor slave info */
-	camera_info->sensor_slave_addr = slave_info->slave_addr;
-	camera_info->sensor_id_reg_addr =
-		slave_info->sensor_id_info.sensor_id_reg_addr;
-	camera_info->sensor_id = slave_info->sensor_id_info.sensor_id;
-	camera_info->sensor_id_mask = slave_info->sensor_id_info.sensor_id_mask;
+    /* Fill sensor slave info */
+    camera_info->sensor_slave_addr = slave_info->slave_addr;
+    camera_info->sensor_id_reg_addr =
+        slave_info->sensor_id_info.sensor_id_reg_addr;
+    camera_info->sensor_id = slave_info->sensor_id_info.sensor_id;
+    camera_info->sensor_id_mask = slave_info->sensor_id_info.sensor_id_mask;
 
-	/* Fill CCI master, slave address and CCI default params */
-	if (!s_ctrl->sensor_i2c_client) {
-		pr_err("failed: sensor_i2c_client %pK",
-			s_ctrl->sensor_i2c_client);
-		rc = -EINVAL;
-		goto free_camera_info;
-	}
-	/* Fill sensor address type */
-	s_ctrl->sensor_i2c_client->addr_type = slave_info->addr_type;
-	if (s_ctrl->sensor_i2c_client->client)
-		s_ctrl->sensor_i2c_client->client->addr =
-			camera_info->sensor_slave_addr;
+    /* Fill CCI master, slave address and CCI default params */
+    if (!s_ctrl->sensor_i2c_client) {
+        pr_err("failed: sensor_i2c_client %pK",
+            s_ctrl->sensor_i2c_client);
+        rc = -EINVAL;
+        goto free_camera_info;
+    }
+    /* Fill sensor address type */
+    s_ctrl->sensor_i2c_client->addr_type = slave_info->addr_type;
+    if (s_ctrl->sensor_i2c_client->client)
+        s_ctrl->sensor_i2c_client->client->addr =
+            camera_info->sensor_slave_addr;
 
-	cci_client = s_ctrl->sensor_i2c_client->cci_client;
-	if (!cci_client) {
-		pr_err("failed: cci_client %pK", cci_client);
-		goto free_camera_info;
-	}
-	cci_client->cci_i2c_master = s_ctrl->cci_i2c_master;
-	cci_client->sid = slave_info->slave_addr >> 1;
-	cci_client->retries = 3;
-	cci_client->id_map = 0;
-	cci_client->i2c_freq_mode = slave_info->i2c_freq_mode;
+    cci_client = s_ctrl->sensor_i2c_client->cci_client;
+    if (!cci_client) {
+        pr_err("failed: cci_client %pK", cci_client);
+        goto free_camera_info;
+    }
+    cci_client->cci_i2c_master = s_ctrl->cci_i2c_master;
+    cci_client->sid = slave_info->slave_addr >> 1;
+    cci_client->retries = 3;
+    cci_client->id_map = 0;
+    cci_client->i2c_freq_mode = slave_info->i2c_freq_mode;
 
-	/* Parse and fill vreg params for powerup settings */
-	rc = msm_camera_fill_vreg_params(
-		s_ctrl->sensordata->power_info.cam_vreg,
-		s_ctrl->sensordata->power_info.num_vreg,
-		s_ctrl->sensordata->power_info.power_setting,
-		s_ctrl->sensordata->power_info.power_setting_size);
-	if (rc < 0) {
-		pr_err("failed: msm_camera_get_dt_power_setting_data rc %d",
-			rc);
-		goto free_camera_info;
-	}
+    /* Parse and fill vreg params for powerup settings */
+    rc = msm_camera_fill_vreg_params(
+        s_ctrl->sensordata->power_info.cam_vreg,
+        s_ctrl->sensordata->power_info.num_vreg,
+        s_ctrl->sensordata->power_info.power_setting,
+        s_ctrl->sensordata->power_info.power_setting_size);
+    if (rc < 0) {
+        pr_err("failed: msm_camera_get_dt_power_setting_data rc %d",
+            rc);
+        goto free_camera_info;
+    }
 
-	/* Parse and fill vreg params for powerdown settings*/
-	rc = msm_camera_fill_vreg_params(
-		s_ctrl->sensordata->power_info.cam_vreg,
-		s_ctrl->sensordata->power_info.num_vreg,
-		s_ctrl->sensordata->power_info.power_down_setting,
-		s_ctrl->sensordata->power_info.power_down_setting_size);
-	if (rc < 0) {
-		pr_err("failed: msm_camera_fill_vreg_params for PDOWN rc %d",
-			rc);
-		goto free_camera_info;
-	}
+    /* Parse and fill vreg params for powerdown settings*/
+    rc = msm_camera_fill_vreg_params(
+        s_ctrl->sensordata->power_info.cam_vreg,
+        s_ctrl->sensordata->power_info.num_vreg,
+        s_ctrl->sensordata->power_info.power_down_setting,
+        s_ctrl->sensordata->power_info.power_down_setting_size);
+    if (rc < 0) {
+        pr_err("failed: msm_camera_fill_vreg_params for PDOWN rc %d",
+            rc);
+        goto free_camera_info;
+    }
 
 CSID_TG:
-	/* Update sensor, actuator and eeprom name in
-	*  sensor control structure */
-	s_ctrl->sensordata->sensor_name = slave_info->sensor_name;
-	s_ctrl->sensordata->eeprom_name = slave_info->eeprom_name;
-	s_ctrl->sensordata->actuator_name = slave_info->actuator_name;
-	s_ctrl->sensordata->ois_name = slave_info->ois_name;
-	s_ctrl->sensordata->flash_name = slave_info->flash_name;
-	/*
-	 * Update eeporm subdevice Id by input eeprom name
-	 */
-	rc = msm_sensor_fill_eeprom_subdevid_by_name(s_ctrl);
-	if (rc < 0) {
-		pr_err("%s failed %d\n", __func__, __LINE__);
-		goto free_camera_info;
-	}
-	/*
-	 * Update actuator subdevice Id by input actuator name
-	 */
-	rc = msm_sensor_fill_actuator_subdevid_by_name(s_ctrl);
-	if (rc < 0) {
-		pr_err("%s failed %d\n", __func__, __LINE__);
-		goto free_camera_info;
-	}
+    s_ctrl->sensordata->sensor_name = slave_info->sensor_name;
+    s_ctrl->sensordata->eeprom_name = slave_info->eeprom_name;
+    s_ctrl->sensordata->actuator_name = slave_info->actuator_name;
+    s_ctrl->sensordata->ois_name = slave_info->ois_name;
+    s_ctrl->sensordata->flash_name = slave_info->flash_name;
 
-	rc = msm_sensor_fill_ois_subdevid_by_name(s_ctrl);
-	if (rc < 0) {
-		pr_err("%s failed %d\n", __func__, __LINE__);
-		goto free_camera_info;
-	}
+    rc = msm_sensor_fill_eeprom_subdevid_by_name(s_ctrl);
+    if (rc < 0) {
+        pr_err("%s failed %d\n", __func__, __LINE__);
+        goto free_camera_info;
+    }
+    rc = msm_sensor_fill_actuator_subdevid_by_name(s_ctrl);
+    if (rc < 0) {
+        pr_err("%s failed %d\n", __func__, __LINE__);
+        goto free_camera_info;
+    }
 
-	rc = msm_sensor_fill_flash_subdevid_by_name(s_ctrl);
-	if (rc < 0) {
-		pr_err("%s failed %d\n", __func__, __LINE__);
-		goto free_camera_info;
-	}
+    rc = msm_sensor_fill_ois_subdevid_by_name(s_ctrl);
+    if (rc < 0) {
+        pr_err("%s failed %d\n", __func__, __LINE__);
+        goto free_camera_info;
+    }
 
-	/* Power up and probe sensor */
-	rc = s_ctrl->func_tbl->sensor_power_up(s_ctrl);
-	if (rc < 0) {
-		pr_err("%s power up failed", slave_info->sensor_name);
-		goto free_camera_info;
-	}
+    rc = msm_sensor_fill_flash_subdevid_by_name(s_ctrl);
+    if (rc < 0) {
+        pr_err("%s failed %d\n", __func__, __LINE__);
+        goto free_camera_info;
+    }
 
-	pr_err("%s probe succeeded", slave_info->sensor_name);
+    /* Power up and probe sensor */
+    rc = s_ctrl->func_tbl->sensor_power_up(s_ctrl);
+    if (rc < 0) {
+        pr_err("%s power up failed", slave_info->sensor_name);
+        goto free_camera_info;
+    }
 
-	if (xiaomi_msm8953_mach_get() == XIAOMI_MSM8953_MACH_MIDO) {
+    pr_err("%s probe succeeded", slave_info->sensor_name);
+
+    if (mach == XIAOMI_MSM8953_MACH_MIDO) {
         if (!strcmp(slave_info->sensor_name, "ov13855_sunny")) {
             fusion_read_id_ov13855(s_ctrl);
         } else if (!strcmp(slave_info->sensor_name, "s5k3l8_ofilm")) {
@@ -1125,80 +1110,71 @@ CSID_TG:
         }
     }
 
-#ifndef CONFIG_MACH_XIAOMI_MIDO
-	s_ctrl->bypass_video_node_creation =
-		slave_info->bypass_video_node_creation;
-#endif
+    if (mach != XIAOMI_MSM8953_MACH_MIDO) {
+        s_ctrl->bypass_video_node_creation =
+            slave_info->bypass_video_node_creation;
+    } else {
+        s_ctrl->bypass_video_node_creation = 0;
+    }
 
-	/*
-	 * Update the subdevice id of flash-src based on availability in kernel.
-	 */
-	if (strlen(slave_info->flash_name) == 0) {
-		s_ctrl->sensordata->sensor_info->
-			subdev_id[SUB_MODULE_LED_FLASH] = -1;
-	}
+    /* Update the subdevice id of flash-src based on availability in kernel. */
+    if (strlen(slave_info->flash_name) == 0) {
+        s_ctrl->sensordata->sensor_info->
+            subdev_id[SUB_MODULE_LED_FLASH] = -1;
+    }
 
-	/*
-	 * Create /dev/videoX node, comment for now until dummy /dev/videoX
-	 * node is created and used by HAL
-	 */
+    if (s_ctrl->sensor_device_type == MSM_CAMERA_PLATFORM_DEVICE)
+        rc = msm_sensor_driver_create_v4l_subdev(s_ctrl);
+    else
+        rc = msm_sensor_driver_create_i2c_v4l_subdev(s_ctrl);
+    if (rc < 0) {
+        pr_err("failed: camera creat v4l2 rc %d", rc);
+        goto camera_power_down;
+    }
 
-	if (s_ctrl->sensor_device_type == MSM_CAMERA_PLATFORM_DEVICE)
-		rc = msm_sensor_driver_create_v4l_subdev(s_ctrl);
-	else
-		rc = msm_sensor_driver_create_i2c_v4l_subdev(s_ctrl);
-	if (rc < 0) {
-		pr_err("failed: camera creat v4l2 rc %d", rc);
-		goto camera_power_down;
-	}
+    /* Power down */
+    s_ctrl->func_tbl->sensor_power_down(s_ctrl);
 
-	/* Power down */
-	s_ctrl->func_tbl->sensor_power_down(s_ctrl);
+    rc = msm_sensor_fill_slave_info_init_params(
+        slave_info,
+        s_ctrl->sensordata->sensor_info);
+    if (rc < 0) {
+        pr_err("%s Fill slave info failed", slave_info->sensor_name);
+        goto free_camera_info;
+    }
+    rc = msm_sensor_validate_slave_info(s_ctrl->sensordata->sensor_info);
+    if (rc < 0) {
+        pr_err("%s Validate slave info failed",
+            slave_info->sensor_name);
+        goto free_camera_info;
+    }
+    /* Update sensor mount angle and position in media entity flag */
+    is_yuv = (slave_info->output_format == MSM_SENSOR_YCBCR) ? 1 : 0;
+    mount_pos = ((s_ctrl->is_secure & 0x1) << 26) | is_yuv << 25 |
+        (s_ctrl->sensordata->sensor_info->position << 16) |
+        ((s_ctrl->sensordata->
+        sensor_info->sensor_mount_angle / 90) << 8);
 
-	rc = msm_sensor_fill_slave_info_init_params(
-		slave_info,
-		s_ctrl->sensordata->sensor_info);
-	if (rc < 0) {
-		pr_err("%s Fill slave info failed", slave_info->sensor_name);
-		goto free_camera_info;
-	}
-	rc = msm_sensor_validate_slave_info(s_ctrl->sensordata->sensor_info);
-	if (rc < 0) {
-		pr_err("%s Validate slave info failed",
-			slave_info->sensor_name);
-		goto free_camera_info;
-	}
-	/* Update sensor mount angle and position in media entity flag */
-	is_yuv = (slave_info->output_format == MSM_SENSOR_YCBCR) ? 1 : 0;
-	mount_pos = ((s_ctrl->is_secure & 0x1) << 26) | is_yuv << 25 |
-		(s_ctrl->sensordata->sensor_info->position << 16) |
-		((s_ctrl->sensordata->
-		sensor_info->sensor_mount_angle / 90) << 8);
+    s_ctrl->msm_sd.sd.entity.flags = mount_pos | MEDIA_ENT_FL_DEFAULT;
 
-	s_ctrl->msm_sd.sd.entity.flags = mount_pos | MEDIA_ENT_FL_DEFAULT;
+    /*Save sensor info*/
+    s_ctrl->sensordata->cam_slave_info = slave_info;
 
-	/*Save sensor info*/
-	s_ctrl->sensordata->cam_slave_info = slave_info;
+    msm_sensor_fill_sensor_info(s_ctrl, probed_info, entity_name);
 
-	msm_sensor_fill_sensor_info(s_ctrl, probed_info, entity_name);
-
-	/*
-	 * Set probe succeeded flag to 1 so that no other camera shall
-	 * probed on this slot
-	 */
-	s_ctrl->is_probe_succeed = 1;
-	return rc;
+    s_ctrl->is_probe_succeed = 1;
+    return rc;
 
 camera_power_down:
-	s_ctrl->func_tbl->sensor_power_down(s_ctrl);
+    s_ctrl->func_tbl->sensor_power_down(s_ctrl);
 free_camera_info:
-	kfree(camera_info);
+    kfree(camera_info);
 free_power_settings:
-	kfree(s_ctrl->sensordata->power_info.power_setting);
-	kfree(s_ctrl->sensordata->power_info.power_down_setting);
+    kfree(s_ctrl->sensordata->power_info.power_setting);
+    kfree(s_ctrl->sensordata->power_info.power_down_setting);
 free_slave_info:
-	kfree(slave_info);
-	return rc;
+    kfree(slave_info);
+    return rc;
 }
 
 static int32_t msm_sensor_driver_get_dt_data(struct msm_sensor_ctrl_t *s_ctrl)

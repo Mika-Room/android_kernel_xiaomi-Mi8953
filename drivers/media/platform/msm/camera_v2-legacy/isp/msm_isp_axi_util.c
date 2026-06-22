@@ -2364,69 +2364,68 @@ static void msm_isp_update_camif_output_count(
 	}
 }
 
-/*Factor in Q2 format*/
+/* Factor in Q2 format */
 #define ISP_DEFAULT_FORMAT_FACTOR 6
 #define ISP_BUS_UTILIZATION_FACTOR 6
-#ifdef CONFIG_MACH_XIAOMI_MIDO
-static int msm_isp_update_stream_bandwidth(struct vfe_device *vfe_dev)
-#else
 int msm_isp_update_stream_bandwidth(struct vfe_device *vfe_dev,
-	enum msm_vfe_hw_state hw_state)
-#endif
+    enum msm_vfe_hw_state hw_state)
 {
-	int i, rc = 0;
-#ifndef CONFIG_MACH_XIAOMI_MIDO
-	int frame_src, ms_type;
-#endif
-	struct msm_vfe_axi_stream *stream_info;
-	struct msm_vfe_axi_shared_data *axi_data = &vfe_dev->axi_data;
-	uint64_t total_pix_bandwidth = 0, total_rdi_bandwidth = 0;
-	uint64_t total_fe_bandwidth = 0;
-	uint32_t num_pix_streams = 0;
-	uint64_t total_bandwidth = 0;
-	int bpp = 0;
+    int i, rc = 0;
+    int frame_src, ms_type;
+    struct msm_vfe_axi_stream *stream_info;
+    struct msm_vfe_axi_shared_data *axi_data = &vfe_dev->axi_data;
+    uint64_t total_pix_bandwidth = 0, total_rdi_bandwidth = 0;
+    uint64_t total_fe_bandwidth = 0;
+    uint32_t num_pix_streams = 0;
+    uint64_t total_bandwidth = 0;
+    int bpp = 0;
 
-	for (i = 0; i < VFE_AXI_SRC_MAX; i++) {
-		stream_info = &axi_data->stream_info[i];
-#ifndef CONFIG_MACH_XIAOMI_MIDO
-		frame_src = SRC_TO_INTF(stream_info->stream_src);
-		ms_type = vfe_dev->axi_data.src_info[frame_src].
-			dual_hw_ms_info.dual_hw_ms_type;
-		if (hw_state == HW_STATE_SLEEP) {
-			rc = msm_isp_update_bandwidth(
-				ISP_VFE0 + vfe_dev->pdev->id, 0, 0);
-			return rc;
-		}
-#endif
+    int mach = xiaomi_msm8953_mach_get();
 
-		if (stream_info->state == ACTIVE ||
-			stream_info->state == START_PENDING) {
-			if (stream_info->stream_src < RDI_INTF_0) {
-				total_pix_bandwidth += stream_info->bandwidth;
-				num_pix_streams++;
-			} else {
-				total_rdi_bandwidth += stream_info->bandwidth;
-			}
-		}
-	}
+    for (i = 0; i < VFE_AXI_SRC_MAX; i++) {
+        stream_info = &axi_data->stream_info[i];
 
-	if (axi_data->src_info[VFE_PIX_0].input_mux == EXTERNAL_READ
-		&& num_pix_streams){
-			bpp = msm_isp_get_bit_per_pixel(axi_data->
-			src_info[VFE_PIX_0].input_format);
-			total_fe_bandwidth =
-			(axi_data->src_info[VFE_PIX_0].pixel_clock / 8) * bpp;
-	}
+        if (mach != XIAOMI_MSM8953_MACH_MIDO) {
+            frame_src = SRC_TO_INTF(stream_info->stream_src);
+            ms_type = vfe_dev->axi_data.src_info[frame_src].
+                dual_hw_ms_info.dual_hw_ms_type;
+            if (hw_state == HW_STATE_SLEEP) {
+                rc = msm_isp_update_bandwidth(
+                    ISP_VFE0 + vfe_dev->pdev->id, 0, 0);
+                return rc;
+            }
+        }
 
-	total_bandwidth = total_pix_bandwidth + total_rdi_bandwidth +
-			total_fe_bandwidth;
-		rc = msm_isp_update_bandwidth(ISP_VFE0 + vfe_dev->pdev->id,
-			(total_bandwidth + vfe_dev->hw_info->min_ab),
-			(total_bandwidth + vfe_dev->hw_info->min_ib));
-	if (rc < 0)
-		pr_err("%s: update failed\n", __func__);
+        if (stream_info->state == ACTIVE ||
+            stream_info->state == START_PENDING) {
+            if (stream_info->stream_src < RDI_INTF_0) {
+                total_pix_bandwidth += stream_info->bandwidth;
+                num_pix_streams++;
+            } else {
+                total_rdi_bandwidth += stream_info->bandwidth;
+            }
+        }
+    }
 
-	return rc;
+    if (axi_data->src_info[VFE_PIX_0].input_mux == EXTERNAL_READ
+        && num_pix_streams) {
+            bpp = msm_isp_get_bit_per_pixel(axi_data->
+            src_info[VFE_PIX_0].input_format);
+            total_fe_bandwidth =
+            (axi_data->src_info[VFE_PIX_0].pixel_clock / 8) * bpp;
+    }
+
+    total_bandwidth = total_pix_bandwidth + total_rdi_bandwidth +
+            total_fe_bandwidth;
+            
+    rc = msm_isp_update_bandwidth(ISP_VFE0 + vfe_dev->pdev->id,
+        (total_bandwidth + vfe_dev->hw_info->min_ab),
+        (total_bandwidth + vfe_dev->hw_info->min_ib));
+        
+    if (rc < 0)
+        pr_err("%s: update failed\n", __func__);
+
+    return rc;
 }
 
 static int msm_isp_axi_wait_for_cfg_done(struct vfe_device *vfe_dev,
@@ -3033,11 +3032,7 @@ static int msm_isp_start_axi_stream(struct vfe_device *vfe_dev,
 		}
 	}
 	mutex_unlock(&vfe_dev->buf_mgr->lock);
-#ifdef CONFIG_MACH_XIAOMI_MIDO
-	msm_isp_update_stream_bandwidth(vfe_dev);
-#else
 	msm_isp_update_stream_bandwidth(vfe_dev, stream_cfg_cmd->hw_state);
-#endif
 	vfe_dev->hw_info->vfe_ops.axi_ops.reload_wm(vfe_dev,
 		vfe_dev->vfe_base, wm_reload_mask);
 	msm_isp_update_camif_output_count(vfe_dev, stream_cfg_cmd);
@@ -3242,11 +3237,8 @@ static int msm_isp_stop_axi_stream(struct vfe_device *vfe_dev,
 	}
 
 	msm_isp_update_camif_output_count(vfe_dev, stream_cfg_cmd);
-#ifdef CONFIG_MACH_XIAOMI_MIDO
-        msm_isp_update_stream_bandwidth(vfe_dev);
-#else
-        msm_isp_update_stream_bandwidth(vfe_dev, stream_cfg_cmd->hw_state);
-#endif
+
+	msm_isp_update_stream_bandwidth(vfe_dev, stream_cfg_cmd->hw_state);
 
 	for (i = 0; i < stream_cfg_cmd->num_streams; i++) {
 		stream_info = &axi_data->stream_info[
