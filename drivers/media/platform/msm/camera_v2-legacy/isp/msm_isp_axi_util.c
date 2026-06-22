@@ -15,6 +15,9 @@
 #include "msm_isp_util.h"
 #include "msm_isp_axi_util.h"
 #include "trace/events/msm_cam-legacy.h"
+#if IS_ENABLED(CONFIG_MACH_XIAOMI_MSM8953)
+#include <xiaomi-msm8953/mach.h>
+#endif
 
 
 #define ISP_SOF_DEBUG_COUNT 0

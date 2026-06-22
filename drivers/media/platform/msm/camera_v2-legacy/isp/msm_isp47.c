@@ -24,6 +24,9 @@
 #include "msm_isp47.h"
 #include "cam_soc_api.h"
 #include "msm_isp48.h"
+#if IS_ENABLED(CONFIG_MACH_XIAOMI_MSM8953)
+#include <xiaomi-msm8953/mach.h>
+#endif
 
 #undef CDBG
 #define CDBG(fmt, args...) pr_debug(fmt, ##args)

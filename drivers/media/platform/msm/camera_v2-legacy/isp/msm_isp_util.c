@@ -20,6 +20,9 @@
 #include "msm_isp_stats_util.h"
 #include "msm_camera_io_util.h"
 #include "cam_smmu_api.h"
+#if IS_ENABLED(CONFIG_MACH_XIAOMI_MSM8953)
+#include <xiaomi-msm8953/mach.h>
+#endif
 #define CREATE_TRACE_POINTS
 #include "trace/events/msm_cam-legacy.h"
 
