@@ -2617,72 +2617,56 @@ int msm_vfe47_enable_regulators(struct vfe_device *vfe_dev, int enable)
 int msm_vfe47_get_platform_data(struct vfe_device *vfe_dev)
 {
     int rc = 0;
-    void __iomem *vfe_fuse_base = NULL;
-    uint32_t vfe_fuse_base_size = 0;
-    
-    int mach = xiaomi_msm8953_mach_get();
+    int rc = 0;
+#ifndef CONFIG_MACH_XIAOMI_MIDO
+	void __iomem *vfe_fuse_base;
+	uint32_t vfe_fuse_base_size;
+#endif
 
-    vfe_dev->vfe_base = msm_camera_get_reg_base(vfe_dev->pdev, "vfe", 0);
-    if (!vfe_dev->vfe_base)
-        return -ENOMEM;  
-    vfe_dev->vfe_vbif_base = msm_camera_get_reg_base(vfe_dev->pdev,
-                    "vfe_vbif", 0);
-    if (!vfe_dev->vfe_vbif_base) {
-        rc = -ENOMEM;
-        goto vbif_base_fail;
-    }
+	vfe_dev->vfe_base = msm_camera_get_reg_base(vfe_dev->pdev, "vfe", 0);
+	if (!vfe_dev->vfe_base)
+		return -ENOMEM;
+	vfe_dev->vfe_vbif_base = msm_camera_get_reg_base(vfe_dev->pdev,
+					"vfe_vbif", 0);
+	if (!vfe_dev->vfe_vbif_base) {
+		rc = -ENOMEM;
+		goto vbif_base_fail;
+	}
 
-    vfe_dev->vfe_irq = msm_camera_get_irq(vfe_dev->pdev, "vfe");
-    if (!vfe_dev->vfe_irq) {
-        rc = -ENODEV;
-        goto vfe_irq_fail;
-    }
+	vfe_dev->vfe_irq = msm_camera_get_irq(vfe_dev->pdev, "vfe");
+	if (!vfe_dev->vfe_irq) {
+		rc = -ENODEV;
+		goto vfe_irq_fail;
+	}
 
-    vfe_dev->vfe_base_size = msm_camera_get_res_size(vfe_dev->pdev, "vfe");
-    vfe_dev->vfe_vbif_base_size = msm_camera_get_res_size(vfe_dev->pdev,
-                        "vfe_vbif");
-    if (!vfe_dev->vfe_base_size || !vfe_dev->vfe_vbif_base_size) {
-        rc = -ENOMEM;
-        goto get_res_fail;
-    }
-    if (mach != XIAOMI_MSM8953_MACH_MIDO) {
-        vfe_dev->vfe_hw_limit = 0;
-        vfe_fuse_base = msm_camera_get_reg_base(vfe_dev->pdev,
-                        "vfe_fuse", 0);
-        vfe_fuse_base_size = msm_camera_get_res_size(vfe_dev->pdev,
-                            "vfe_fuse");
-        if (vfe_fuse_base) {
-            if (vfe_fuse_base_size)
-                vfe_dev->vfe_hw_limit =
-                    (msm_camera_io_r(vfe_fuse_base) >> 7) & 0x3;
-            msm_camera_put_reg_base(vfe_dev->pdev, vfe_fuse_base,
-                    "vfe_fuse", 0);
-        }
-    } else {
-        vfe_dev->vfe_hw_limit = 0;
-    }
+	vfe_dev->vfe_base_size = msm_camera_get_res_size(vfe_dev->pdev, "vfe");
+	vfe_dev->vfe_vbif_base_size = msm_camera_get_res_size(vfe_dev->pdev,
+						"vfe_vbif");
+	if (!vfe_dev->vfe_base_size || !vfe_dev->vfe_vbif_base_size) {
+		rc = -ENOMEM;
+		goto get_res_fail;
+	}
+	rc = vfe_dev->hw_info->vfe_ops.platform_ops.get_regulators(vfe_dev);
+	if (rc)
+		goto get_regulator_fail;
 
-    rc = vfe_dev->hw_info->vfe_ops.platform_ops.get_regulators(vfe_dev);
-    if (rc)
-        goto get_regulator_fail;
+	rc = vfe_dev->hw_info->vfe_ops.platform_ops.get_clks(vfe_dev);
+	if (rc)
+		goto get_clkcs_fail;
 
-    rc = vfe_dev->hw_info->vfe_ops.platform_ops.get_clks(vfe_dev);
-    if (rc)
-        goto get_clkcs_fail;
+	rc = msm_camera_register_irq(vfe_dev->pdev, vfe_dev->vfe_irq,
+		msm_isp_process_irq,
+		IRQF_TRIGGER_RISING, "vfe", vfe_dev);
+	if (rc < 0)
+		goto irq_register_fail;
 
-    rc = msm_camera_register_irq(vfe_dev->pdev, vfe_dev->vfe_irq,
-        msm_isp_process_irq,
-        IRQF_TRIGGER_RISING, "vfe", vfe_dev);
-    if (rc < 0)
-        goto irq_register_fail;
+	msm_camera_enable_irq(vfe_dev->vfe_irq, 0);
 
-    msm_camera_enable_irq(vfe_dev->vfe_irq, 0);
+	rc = msm_isp_init_bandwidth_mgr(vfe_dev, ISP_VFE0 + vfe_dev->pdev->id);
+	if (rc)
+		goto init_bw_fail;
 
-    rc = msm_isp_init_bandwidth_mgr(vfe_dev, ISP_VFE0 + vfe_dev->pdev->id);
-    if (rc)
-        goto init_bw_fail;
-
-    return 0;
+	return 0;
 
 init_bw_fail:
     msm_camera_unregister_irq(vfe_dev->pdev, vfe_dev->vfe_irq, "vfe");

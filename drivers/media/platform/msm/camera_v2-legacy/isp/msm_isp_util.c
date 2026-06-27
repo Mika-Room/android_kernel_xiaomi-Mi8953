@@ -822,77 +822,77 @@ static long msm_isp_ioctl_unlocked(struct v4l2_subdev *sd,
     unsigned int cmd, void *arg)
 {
     long rc = 0;
-    long rc2 = 0;
-    struct vfe_device *vfe_dev = v4l2_get_subdevdata(sd);
+	long rc2 = 0;
+	struct vfe_device *vfe_dev = v4l2_get_subdevdata(sd);
 
-    if (!vfe_dev || !vfe_dev->vfe_base) {
-        pr_err("%s:%d failed: invalid params %pK\n",
-            __func__, __LINE__, vfe_dev);
-        if (vfe_dev)
-            pr_err("%s:%d failed %pK\n", __func__,
-                __LINE__, vfe_dev->vfe_base);
-        return -EINVAL;
-    }
+	if (!vfe_dev || !vfe_dev->vfe_base) {
+		pr_err("%s:%d failed: invalid params %pK\n",
+			__func__, __LINE__, vfe_dev);
+		if (vfe_dev)
+			pr_err("%s:%d failed %pK\n", __func__,
+				__LINE__, vfe_dev->vfe_base);
+		return -EINVAL;
+	}
 
-    /* use real time mutex for hard real-time ioctls such as
-     * buffer operations and register updates.
-     * Use core mutex for other ioctls that could take
-     * longer time to complete such as start/stop ISP streams
-     * which blocks until the hardware start/stop streaming
-     */
-    ISP_DBG("%s: cmd: %d\n", __func__, _IOC_TYPE(cmd));
-    switch (cmd) {
-    case VIDIOC_MSM_VFE_REG_CFG: {
-        mutex_lock(&vfe_dev->realtime_mutex);
-        rc = msm_isp_proc_cmd(vfe_dev, arg);
-        mutex_unlock(&vfe_dev->realtime_mutex);
-        break;
-    }
-    case VIDIOC_MSM_VFE_REG_LIST_CFG: {
-        mutex_lock(&vfe_dev->realtime_mutex);
-        rc = msm_isp_proc_cmd_list(vfe_dev, arg);
-        mutex_unlock(&vfe_dev->realtime_mutex);
-        break;
-    }
-    case VIDIOC_MSM_ISP_REQUEST_BUF:
-        /* fallthrough */
-    case VIDIOC_MSM_ISP_ENQUEUE_BUF:
-        /* fallthrough */
-    case VIDIOC_MSM_ISP_DEQUEUE_BUF:
-        /* fallthrough */
-    case VIDIOC_MSM_ISP_UNMAP_BUF: {
-        mutex_lock(&vfe_dev->buf_mgr->lock);
-        rc = msm_isp_proc_buf_cmd(vfe_dev->buf_mgr, cmd, arg);
-        mutex_unlock(&vfe_dev->buf_mgr->lock);
-        break;
-    }
-    case VIDIOC_MSM_ISP_RELEASE_BUF: {
-        if (vfe_dev->buf_mgr == NULL) {
-            pr_err("%s: buf mgr NULL! rc = -1\n", __func__);
-            rc = -EINVAL;
-            return rc;
-        }
-        mutex_lock(&vfe_dev->buf_mgr->lock);
-        rc = msm_isp_proc_buf_cmd(vfe_dev->buf_mgr, cmd, arg);
-        mutex_unlock(&vfe_dev->buf_mgr->lock);
-        break;
-    }
-    case VIDIOC_MSM_ISP_REQUEST_STREAM:
-        mutex_lock(&vfe_dev->core_mutex);
-        rc = msm_isp_request_axi_stream(vfe_dev, arg);
-        mutex_unlock(&vfe_dev->core_mutex);
-        break;
-    case VIDIOC_MSM_ISP_RELEASE_STREAM:
-        mutex_lock(&vfe_dev->core_mutex);
-        rc = msm_isp_release_axi_stream(vfe_dev, arg);
-        mutex_unlock(&vfe_dev->core_mutex);
-        break;
-    case VIDIOC_MSM_ISP_CFG_STREAM:
-        mutex_lock(&vfe_dev->core_mutex);
-        rc = msm_isp_cfg_axi_stream(vfe_dev, arg);
-        mutex_unlock(&vfe_dev->core_mutex);
-        break;
-    case VIDIOC_MSM_ISP_CFG_HW_STATE:
+	/* use real time mutex for hard real-time ioctls such as
+	 * buffer operations and register updates.
+	 * Use core mutex for other ioctls that could take
+	 * longer time to complete such as start/stop ISP streams
+	 * which blocks until the hardware start/stop streaming
+	 */
+	ISP_DBG("%s: cmd: %d\n", __func__, _IOC_TYPE(cmd));
+	switch (cmd) {
+	case VIDIOC_MSM_VFE_REG_CFG: {
+		mutex_lock(&vfe_dev->realtime_mutex);
+		rc = msm_isp_proc_cmd(vfe_dev, arg);
+		mutex_unlock(&vfe_dev->realtime_mutex);
+		break;
+	}
+	case VIDIOC_MSM_VFE_REG_LIST_CFG: {
+		mutex_lock(&vfe_dev->realtime_mutex);
+		rc = msm_isp_proc_cmd_list(vfe_dev, arg);
+		mutex_unlock(&vfe_dev->realtime_mutex);
+		break;
+	}
+	case VIDIOC_MSM_ISP_REQUEST_BUF:
+		/* fallthrough */
+	case VIDIOC_MSM_ISP_ENQUEUE_BUF:
+		/* fallthrough */
+	case VIDIOC_MSM_ISP_DEQUEUE_BUF:
+		/* fallthrough */
+	case VIDIOC_MSM_ISP_UNMAP_BUF: {
+		mutex_lock(&vfe_dev->buf_mgr->lock);
+		rc = msm_isp_proc_buf_cmd(vfe_dev->buf_mgr, cmd, arg);
+		mutex_unlock(&vfe_dev->buf_mgr->lock);
+		break;
+	}
+	case VIDIOC_MSM_ISP_RELEASE_BUF: {
+		if (vfe_dev->buf_mgr == NULL) {
+			pr_err("%s: buf mgr NULL! rc = -1\n", __func__);
+			rc = -EINVAL;
+			return rc;
+		}
+		mutex_lock(&vfe_dev->buf_mgr->lock);
+		rc = msm_isp_proc_buf_cmd(vfe_dev->buf_mgr, cmd, arg);
+		mutex_unlock(&vfe_dev->buf_mgr->lock);
+		break;
+	}
+	case VIDIOC_MSM_ISP_REQUEST_STREAM:
+		mutex_lock(&vfe_dev->core_mutex);
+		rc = msm_isp_request_axi_stream(vfe_dev, arg);
+		mutex_unlock(&vfe_dev->core_mutex);
+		break;
+	case VIDIOC_MSM_ISP_RELEASE_STREAM:
+		mutex_lock(&vfe_dev->core_mutex);
+		rc = msm_isp_release_axi_stream(vfe_dev, arg);
+		mutex_unlock(&vfe_dev->core_mutex);
+		break;
+	case VIDIOC_MSM_ISP_CFG_STREAM:
+		mutex_lock(&vfe_dev->core_mutex);
+		rc = msm_isp_cfg_axi_stream(vfe_dev, arg);
+		mutex_unlock(&vfe_dev->core_mutex);
+		break;
+	case VIDIOC_MSM_ISP_CFG_HW_STATE:
         if (xiaomi_msm8953_mach_get() == XIAOMI_MSM8953_MACH_MIDO) {
             rc = 0;
             break;
@@ -902,152 +902,148 @@ static long msm_isp_ioctl_unlocked(struct v4l2_subdev *sd,
             *(enum msm_vfe_hw_state *)arg);
         mutex_unlock(&vfe_dev->core_mutex);
         break;
-    case VIDIOC_MSM_ISP_AXI_HALT:
-        mutex_lock(&vfe_dev->core_mutex);
-        rc = msm_isp_axi_halt(vfe_dev, arg);
-        mutex_unlock(&vfe_dev->core_mutex);
-        break;
-    case VIDIOC_MSM_ISP_AXI_RESET:
-        mutex_lock(&vfe_dev->core_mutex);
-        if (atomic_read(&vfe_dev->error_info.overflow_state)
-            != HALT_ENFORCED) {
-            rc = msm_isp_stats_reset(vfe_dev);
-            rc2 = msm_isp_axi_reset(vfe_dev, arg);
-            if (!rc && rc2)
-                rc = rc2;
-        } else {
-            pr_err_ratelimited("%s: no HW reset, halt enforced.\n",
-                __func__);
-        }
-        mutex_unlock(&vfe_dev->core_mutex);
-        break;
-    case VIDIOC_MSM_ISP_AXI_RESTART:
-        mutex_lock(&vfe_dev->core_mutex);
-        mutex_lock(&vfe_dev->buf_mgr->lock);
-        if (atomic_read(&vfe_dev->error_info.overflow_state)
-            != HALT_ENFORCED) {
-            rc = msm_isp_stats_restart(vfe_dev);
-            rc2 = msm_isp_axi_restart(vfe_dev, arg);
-            if (!rc && rc2)
-                rc = rc2;
-        } else {
-            pr_err_ratelimited("%s: no AXI restart, halt enforced.\n",
-                __func__);
-        }
-        mutex_unlock(&vfe_dev->buf_mgr->lock);
-        mutex_unlock(&vfe_dev->core_mutex);
-        break;
-    case VIDIOC_MSM_ISP_INPUT_CFG:
-        mutex_lock(&vfe_dev->core_mutex);
-        rc = msm_isp_cfg_input(vfe_dev, arg);
-        mutex_unlock(&vfe_dev->core_mutex);
-        break;
+	case VIDIOC_MSM_ISP_AXI_HALT:
+		mutex_lock(&vfe_dev->core_mutex);
+		rc = msm_isp_axi_halt(vfe_dev, arg);
+		mutex_unlock(&vfe_dev->core_mutex);
+		break;
+	case VIDIOC_MSM_ISP_AXI_RESET:
+		mutex_lock(&vfe_dev->core_mutex);
+		if (atomic_read(&vfe_dev->error_info.overflow_state)
+			!= HALT_ENFORCED) {
+			rc = msm_isp_stats_reset(vfe_dev);
+			rc2 = msm_isp_axi_reset(vfe_dev, arg);
+			if (!rc && rc2)
+				rc = rc2;
+		} else {
+			pr_err_ratelimited("%s: no HW reset, halt enforced.\n",
+				__func__);
+		}
+		mutex_unlock(&vfe_dev->core_mutex);
+		break;
+	case VIDIOC_MSM_ISP_AXI_RESTART:
+		mutex_lock(&vfe_dev->core_mutex);
+		mutex_lock(&vfe_dev->buf_mgr->lock);
+		if (atomic_read(&vfe_dev->error_info.overflow_state)
+			!= HALT_ENFORCED) {
+			rc = msm_isp_stats_restart(vfe_dev);
+			rc2 = msm_isp_axi_restart(vfe_dev, arg);
+			if (!rc && rc2)
+				rc = rc2;
+		} else {
+			pr_err_ratelimited("%s: no AXI restart, halt enforced.\n",
+				__func__);
+		}
+		mutex_unlock(&vfe_dev->buf_mgr->lock);
+		mutex_unlock(&vfe_dev->core_mutex);
+		break;
+	case VIDIOC_MSM_ISP_INPUT_CFG:
+		mutex_lock(&vfe_dev->core_mutex);
+		rc = msm_isp_cfg_input(vfe_dev, arg);
+		mutex_unlock(&vfe_dev->core_mutex);
+		break;
+	case VIDIOC_MSM_ISP_AHB_CLK_CFG:
+		mutex_lock(&vfe_dev->core_mutex);
+		if (vfe_dev->hw_info->vfe_ops.core_ops.ahb_clk_cfg)
+			rc = vfe_dev->hw_info->vfe_ops.core_ops.
+					ahb_clk_cfg(vfe_dev, arg);
+		else
+			rc = -EOPNOTSUPP;
+		mutex_unlock(&vfe_dev->core_mutex);
+		break;
+	case VIDIOC_MSM_ISP_SET_DUAL_HW_MASTER_SLAVE:
+		mutex_lock(&vfe_dev->core_mutex);
+		rc = msm_isp_set_dual_HW_master_slave_mode(vfe_dev, arg);
+		mutex_unlock(&vfe_dev->core_mutex);
+		break;
+	case VIDIOC_MSM_ISP_FETCH_ENG_START:
+	case VIDIOC_MSM_ISP_MAP_BUF_START_FE:
+		mutex_lock(&vfe_dev->core_mutex);
+		rc = msm_isp_start_fetch_engine(vfe_dev, arg);
+		mutex_unlock(&vfe_dev->core_mutex);
+		break;
 
-    /* UBAHAN UNIFIED: Tangkap interupsi ioctl baik dari HAL Mido maupun Non-Mido */
-    case VIDIOC_MSM_ISP_AHB_CLK_CFG_MIDO:
-    case VIDIOC_MSM_ISP_AHB_CLK_CFG_NON_MIDO:
-        mutex_lock(&vfe_dev->core_mutex);
-        if (vfe_dev->hw_info->vfe_ops.core_ops.ahb_clk_cfg)
-            rc = vfe_dev->hw_info->vfe_ops.core_ops.
-                    ahb_clk_cfg(vfe_dev, arg);
-        else
-            rc = -EOPNOTSUPP;
-        mutex_unlock(&vfe_dev->core_mutex);
-        break;
+	case VIDIOC_MSM_ISP_FETCH_ENG_MULTI_PASS_START:
+	case VIDIOC_MSM_ISP_MAP_BUF_START_MULTI_PASS_FE:
+		mutex_lock(&vfe_dev->core_mutex);
+		rc = msm_isp_start_fetch_engine_multi_pass(vfe_dev, arg);
+		mutex_unlock(&vfe_dev->core_mutex);
+		break;
 
-    case VIDIOC_MSM_ISP_SET_DUAL_HW_MASTER_SLAVE:
-        mutex_lock(&vfe_dev->core_mutex);
-        rc = msm_isp_set_dual_HW_master_slave_mode(vfe_dev, arg);
-        mutex_unlock(&vfe_dev->core_mutex);
-        break;
-    case VIDIOC_MSM_ISP_FETCH_ENG_START:
-    case VIDIOC_MSM_ISP_MAP_BUF_START_FE:
-        mutex_lock(&vfe_dev->core_mutex);
-        rc = msm_isp_start_fetch_engine(vfe_dev, arg);
-        mutex_unlock(&vfe_dev->core_mutex);
-        break;
+	case VIDIOC_MSM_ISP_RESTART_FE:
+		mutex_lock(&vfe_dev->core_mutex);
+		rc = msm_isp_restart_fe(vfe_dev, arg);
+		mutex_unlock(&vfe_dev->core_mutex);
+		break;
 
-    case VIDIOC_MSM_ISP_FETCH_ENG_MULTI_PASS_START:
-    case VIDIOC_MSM_ISP_MAP_BUF_START_MULTI_PASS_FE:
-        mutex_lock(&vfe_dev->core_mutex);
-        rc = msm_isp_start_fetch_engine_multi_pass(vfe_dev, arg);
-        mutex_unlock(&vfe_dev->core_mutex);
-        break;
+	case VIDIOC_MSM_ISP_UPDATE_FE_FRAME_ID:
+		mutex_lock(&vfe_dev->core_mutex);
+		rc = msm_isp_update_fe_frame_id(vfe_dev, arg);
+		mutex_unlock(&vfe_dev->core_mutex);
+		break;
 
-    case VIDIOC_MSM_ISP_RESTART_FE:
-        mutex_lock(&vfe_dev->core_mutex);
-        rc = msm_isp_restart_fe(vfe_dev, arg);
-        mutex_unlock(&vfe_dev->core_mutex);
-        break;
+	case VIDIOC_MSM_ISP_REG_UPDATE_CMD:
+		if (arg) {
+			enum msm_vfe_input_src frame_src =
+				*((enum msm_vfe_input_src *)arg);
+			vfe_dev->hw_info->vfe_ops.core_ops.
+				reg_update(vfe_dev, frame_src);
+		}
+		break;
+	case VIDIOC_MSM_ISP_SET_SRC_STATE:
+		mutex_lock(&vfe_dev->core_mutex);
+		rc = msm_isp_set_src_state(vfe_dev, arg);
+		mutex_unlock(&vfe_dev->core_mutex);
+		break;
+	case VIDIOC_MSM_ISP_REQUEST_STATS_STREAM:
+		mutex_lock(&vfe_dev->core_mutex);
+		rc = msm_isp_request_stats_stream(vfe_dev, arg);
+		mutex_unlock(&vfe_dev->core_mutex);
+		break;
+	case VIDIOC_MSM_ISP_RELEASE_STATS_STREAM:
+		mutex_lock(&vfe_dev->core_mutex);
+		rc = msm_isp_release_stats_stream(vfe_dev, arg);
+		mutex_unlock(&vfe_dev->core_mutex);
+		break;
+	case VIDIOC_MSM_ISP_CFG_STATS_STREAM:
+		mutex_lock(&vfe_dev->core_mutex);
+		rc = msm_isp_cfg_stats_stream(vfe_dev, arg);
+		mutex_unlock(&vfe_dev->core_mutex);
+		break;
+	case VIDIOC_MSM_ISP_UPDATE_STATS_STREAM:
+		mutex_lock(&vfe_dev->core_mutex);
+		rc = msm_isp_update_stats_stream(vfe_dev, arg);
+		mutex_unlock(&vfe_dev->core_mutex);
+		break;
+	case VIDIOC_MSM_ISP_UPDATE_STREAM:
+		mutex_lock(&vfe_dev->core_mutex);
+		rc = msm_isp_update_axi_stream(vfe_dev, arg);
+		mutex_unlock(&vfe_dev->core_mutex);
+		break;
+	case VIDIOC_MSM_ISP_SMMU_ATTACH:
+		mutex_lock(&vfe_dev->core_mutex);
+		rc = msm_isp_smmu_attach(vfe_dev->buf_mgr, arg);
+		mutex_unlock(&vfe_dev->core_mutex);
+		break;
+	case MSM_SD_NOTIFY_FREEZE:
+		vfe_dev->isp_sof_debug = 0;
+		vfe_dev->isp_raw0_debug = 0;
+		vfe_dev->isp_raw1_debug = 0;
+		vfe_dev->isp_raw2_debug = 0;
+		break;
+	case MSM_SD_UNNOTIFY_FREEZE:
+		break;
+	case MSM_SD_SHUTDOWN:
+		while (vfe_dev->vfe_open_cnt != 0)
+			msm_isp_close_node(sd, NULL);
+		break;
 
-    case VIDIOC_MSM_ISP_UPDATE_FE_FRAME_ID:
-        mutex_lock(&vfe_dev->core_mutex);
-        rc = msm_isp_update_fe_frame_id(vfe_dev, arg);
-        mutex_unlock(&vfe_dev->core_mutex);
-        break;
-
-    case VIDIOC_MSM_ISP_REG_UPDATE_CMD:
-        if (arg) {
-            enum msm_vfe_input_src frame_src =
-                *((enum msm_vfe_input_src *)arg);
-            vfe_dev->hw_info->vfe_ops.core_ops.
-                reg_update(vfe_dev, frame_src);
-        }
-        break;
-    case VIDIOC_MSM_ISP_SET_SRC_STATE:
-        mutex_lock(&vfe_dev->core_mutex);
-        rc = msm_isp_set_src_state(vfe_dev, arg);
-        mutex_unlock(&vfe_dev->core_mutex);
-        break;
-    case VIDIOC_MSM_ISP_REQUEST_STATS_STREAM:
-        mutex_lock(&vfe_dev->core_mutex);
-        rc = msm_isp_request_stats_stream(vfe_dev, arg);
-        mutex_unlock(&vfe_dev->core_mutex);
-        break;
-    case VIDIOC_MSM_ISP_RELEASE_STATS_STREAM:
-        mutex_lock(&vfe_dev->core_mutex);
-        rc = msm_isp_release_stats_stream(vfe_dev, arg);
-        mutex_unlock(&vfe_dev->core_mutex);
-        break;
-    case VIDIOC_MSM_ISP_CFG_STATS_STREAM:
-        mutex_lock(&vfe_dev->core_mutex);
-        rc = msm_isp_cfg_stats_stream(vfe_dev, arg);
-        mutex_unlock(&vfe_dev->core_mutex);
-        break;
-    case VIDIOC_MSM_ISP_UPDATE_STATS_STREAM:
-        mutex_lock(&vfe_dev->core_mutex);
-        rc = msm_isp_update_stats_stream(vfe_dev, arg);
-        mutex_unlock(&vfe_dev->core_mutex);
-        break;
-    case VIDIOC_MSM_ISP_UPDATE_STREAM:
-        mutex_lock(&vfe_dev->core_mutex);
-        rc = msm_isp_update_axi_stream(vfe_dev, arg);
-        mutex_unlock(&vfe_dev->core_mutex);
-        break;
-    case VIDIOC_MSM_ISP_SMMU_ATTACH:
-        mutex_lock(&vfe_dev->core_mutex);
-        rc = msm_isp_smmu_attach(vfe_dev->buf_mgr, arg);
-        mutex_unlock(&vfe_dev->core_mutex);
-        break;
-    case MSM_SD_NOTIFY_FREEZE:
-        vfe_dev->isp_sof_debug = 0;
-        vfe_dev->isp_raw0_debug = 0;
-        vfe_dev->isp_raw1_debug = 0;
-        vfe_dev->isp_raw2_debug = 0;
-        break;
-    case MSM_SD_UNNOTIFY_FREEZE:
-        break;
-    case MSM_SD_SHUTDOWN:
-        while (vfe_dev->vfe_open_cnt != 0)
-            msm_isp_close_node(sd, NULL);
-        break;
-
-    default:
-        pr_err_ratelimited("%s: Invalid ISP command %d\n", __func__,
-            cmd);
-        rc = -EINVAL;
-    }
-    return rc;
+	default:
+		pr_err_ratelimited("%s: Invalid ISP command %d\n", __func__,
+				    cmd);
+		rc = -EINVAL;
+	}
+	return rc;
 }
 
 
@@ -1438,27 +1434,8 @@ static int msm_isp_send_hw_cmd(struct vfe_device *vfe_dev,
 		vfe_dev->vfe_ub_policy = *cfg_data;
 		break;
 	}
-	case GET_VFE_HW_LIMIT: {
-        uint32_t *hw_limit = NULL;
-
-        if (cmd_len < sizeof(uint32_t)) {
-            pr_err("%s:%d failed: invalid cmd len %u exp %zu\n",
-                __func__, __LINE__, cmd_len,
-                sizeof(uint32_t));
-            return -EINVAL;
-        }
-
-        hw_limit = (uint32_t *)cfg_data;
-
-        if (xiaomi_msm8953_mach_get() == XIAOMI_MSM8953_MACH_MIDO) {
-            *hw_limit = 0; 
-        } else {
-            *hw_limit = vfe_dev->vfe_hw_limit;
-        }
-        break;
-    }
-    }
-    return 0;
+	}
+	return 0;
 }
 
 int msm_isp_proc_cmd(struct vfe_device *vfe_dev, void *arg)
