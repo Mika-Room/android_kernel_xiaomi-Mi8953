@@ -84,20 +84,16 @@ static struct v4l2_subdev_info msm_sensor_driver_subdev_info[] = {
 static int32_t msm_sensor_driver_create_i2c_v4l_subdev
             (struct msm_sensor_ctrl_t *s_ctrl)
 {
-    int32_t rc = 0;
-    uint32_t session_id = 0;
-    struct i2c_client *client = s_ctrl->sensor_i2c_client->client;
-    int mach = xiaomi_msm8953_mach_get();
+	int32_t rc = 0;
+	uint32_t session_id = 0;
+	struct i2c_client *client = s_ctrl->sensor_i2c_client->client;
 
-    CDBG("%s %s I2c probe succeeded\n", __func__, client->name);
-    if (mach == XIAOMI_MSM8953_MACH_MIDO || s_ctrl->bypass_video_node_creation == 0) {
-        rc = camera_init_v4l2(&client->dev, &session_id);
-        if (rc < 0) {
-            pr_err("failed: camera_init_i2c_v4l2 rc %d", rc);
-            return rc;
-        }
-    }
-
+	CDBG("%s %s I2c probe succeeded\n", __func__, client->name);
+		rc = camera_init_v4l2(&client->dev, &session_id);
+		if (rc < 0) {
+			pr_err("failed: camera_init_i2c_v4l2 rc %d", rc);
+			return rc;
+		}
     CDBG("%s rc %d session_id %d\n", __func__, rc, session_id);
     snprintf(s_ctrl->msm_sd.sd.name,
         sizeof(s_ctrl->msm_sd.sd.name), "%s",
@@ -131,16 +127,13 @@ static int32_t msm_sensor_driver_create_v4l_subdev
             (struct msm_sensor_ctrl_t *s_ctrl)
 {
     int32_t rc = 0;
-    uint32_t session_id = 0;
-    int mach = xiaomi_msm8953_mach_get();
+	uint32_t session_id = 0;
 
-    if (mach == XIAOMI_MSM8953_MACH_MIDO || s_ctrl->bypass_video_node_creation == 0) {
-        rc = camera_init_v4l2(&s_ctrl->pdev->dev, &session_id);
-        if (rc < 0) {
-            pr_err("failed: camera_init_v4l2 rc %d", rc);
-            return rc;
-        }
-    }
+		rc = camera_init_v4l2(&s_ctrl->pdev->dev, &session_id);
+		if (rc < 0) {
+			pr_err("failed: camera_init_v4l2 rc %d", rc);
+			return rc;
+		}
 
     CDBG("rc %d session_id %d", rc, session_id);
     s_ctrl->sensordata->sensor_info->session_id = session_id;
@@ -866,12 +859,7 @@ int32_t msm_sensor_driver_probe(void *setting,
         slave_info->camera_id = slave_info32->camera_id;
 
         slave_info->i2c_freq_mode = slave_info32->i2c_freq_mode;
-        slave_info->sensor_id_info.sensor_id_reg_addr =
-            slave_info32->sensor_id_info.sensor_id_reg_addr;
-        slave_info->sensor_id_info.sensor_id_mask =
-            slave_info32->sensor_id_info.sensor_id_mask;
-        slave_info->sensor_id_info.sensor_id =
-                slave_info32->sensor_id_info.sensor_id;
+        slave_info->sensor_id_info = slave_info32->sensor_id_info;
 
         slave_info->slave_addr = slave_info32->slave_addr;
         slave_info->power_setting_array.size =
@@ -890,12 +878,6 @@ int32_t msm_sensor_driver_probe(void *setting,
             slave_info32->sensor_init_params;
         slave_info->output_format =
             slave_info32->output_format;
-        if (mach != XIAOMI_MSM8953_MACH_MIDO) {
-            slave_info->bypass_video_node_creation =
-                !!slave_info32->bypass_video_node_creation;
-        } else {
-            slave_info->bypass_video_node_creation = 0;
-        }
         kfree(slave_info32);
     } else
 #endif
@@ -938,10 +920,6 @@ int32_t msm_sensor_driver_probe(void *setting,
         slave_info->sensor_init_params.position);
     CDBG("mount %d",
         slave_info->sensor_init_params.sensor_mount_angle);
-    if (mach != XIAOMI_MSM8953_MACH_MIDO) {
-        CDBG("bypass video node creation %d",
-            slave_info->bypass_video_node_creation);
-    }
 
     /* Validate camera id */
     if (slave_info->camera_id >= MAX_CAMERAS) {
@@ -1108,13 +1086,6 @@ CSID_TG:
         } else {
             printk("read fusion id fail\n");
         }
-    }
-
-    if (mach != XIAOMI_MSM8953_MACH_MIDO) {
-        s_ctrl->bypass_video_node_creation =
-            slave_info->bypass_video_node_creation;
-    } else {
-        s_ctrl->bypass_video_node_creation = 0;
     }
 
     /* Update the subdevice id of flash-src based on availability in kernel. */

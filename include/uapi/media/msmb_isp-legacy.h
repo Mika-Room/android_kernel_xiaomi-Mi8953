@@ -24,8 +24,6 @@
 
 #define ISP_STATS_STREAM_BIT  0x80000000
 
-#define VFE_HW_LIMIT 1
-
 struct msm_vfe_cfg_cmd_list;
 
 enum ISP_START_PIXEL_PATTERN {
@@ -502,7 +500,6 @@ enum msm_vfe_reg_cfg_type {
 	VFE_HW_UPDATE_UNLOCK,
 	SET_WM_UB_SIZE,
 	SET_UB_POLICY,
-	GET_VFE_HW_LIMIT,
 };
 
 struct msm_vfe_cfg_cmd2 {
@@ -932,173 +929,166 @@ struct msm_isp_ahb_clk_cfg {
 
 enum msm_isp_ioctl_cmd_code {
     MSM_VFE_REG_CFG = BASE_VIDIOC_PRIVATE,
-    MSM_ISP_REQUEST_BUF,
-    MSM_ISP_ENQUEUE_BUF,
-    MSM_ISP_RELEASE_BUF,
-    MSM_ISP_REQUEST_STREAM,
-    MSM_ISP_CFG_STREAM,
-    MSM_ISP_RELEASE_STREAM,
-    MSM_ISP_INPUT_CFG,
-    MSM_ISP_SET_SRC_STATE,
-    MSM_ISP_REQUEST_STATS_STREAM,
-    MSM_ISP_CFG_STATS_STREAM,
-    MSM_ISP_RELEASE_STATS_STREAM,
-    MSM_ISP_REG_UPDATE_CMD,
-    MSM_ISP_UPDATE_STREAM,
-    MSM_VFE_REG_LIST_CFG,
-    MSM_ISP_SMMU_ATTACH,
-    MSM_ISP_UPDATE_STATS_STREAM,
-    MSM_ISP_AXI_HALT,
-    MSM_ISP_AXI_RESET,
-    MSM_ISP_AXI_RESTART,
-    MSM_ISP_FETCH_ENG_START,
-    MSM_ISP_DEQUEUE_BUF,
-    MSM_ISP_SET_DUAL_HW_MASTER_SLAVE,
-    MSM_ISP_MAP_BUF_START_FE,
-    MSM_ISP_UNMAP_BUF,
-    MSM_ISP_FETCH_ENG_MULTI_PASS_START,
-    MSM_ISP_MAP_BUF_START_MULTI_PASS_FE,
-    MSM_ISP_CFG_HW_STATE,
-    MSM_ISP_AHB_CLK_CFG,
-    MSM_ISP_UPDATE_FE_FRAME_ID,
-    MSM_ISP_RESTART_FE,
-    MSM_ISP32_REQUEST_STREAM,
+	MSM_ISP_REQUEST_BUF,
+	MSM_ISP_ENQUEUE_BUF,
+	MSM_ISP_RELEASE_BUF,
+	MSM_ISP_REQUEST_STREAM,
+	MSM_ISP_CFG_STREAM,
+	MSM_ISP_RELEASE_STREAM,
+	MSM_ISP_INPUT_CFG,
+	MSM_ISP_SET_SRC_STATE,
+	MSM_ISP_REQUEST_STATS_STREAM,
+	MSM_ISP_CFG_STATS_STREAM,
+	MSM_ISP_RELEASE_STATS_STREAM,
+	MSM_ISP_REG_UPDATE_CMD,
+	MSM_ISP_UPDATE_STREAM,
+	MSM_VFE_REG_LIST_CFG,
+	MSM_ISP_SMMU_ATTACH,
+	MSM_ISP_UPDATE_STATS_STREAM,
+	MSM_ISP_AXI_HALT,
+	MSM_ISP_AXI_RESET,
+	MSM_ISP_AXI_RESTART,
+	MSM_ISP_FETCH_ENG_START,
+	MSM_ISP_DEQUEUE_BUF,
+	MSM_ISP_SET_DUAL_HW_MASTER_SLAVE,
+	MSM_ISP_MAP_BUF_START_FE,
+	MSM_ISP_UNMAP_BUF,
+	MSM_ISP_FETCH_ENG_MULTI_PASS_START,
+	MSM_ISP_MAP_BUF_START_MULTI_PASS_FE,
+	MSM_ISP_CFG_HW_STATE,
+	MSM_ISP_UPDATE_FE_FRAME_ID,
+	MSM_ISP_RESTART_FE,
+	MSM_ISP32_REQUEST_STREAM,
 };
 
 #define VIDIOC_MSM_VFE_REG_CFG \
-    _IOWR('V', MSM_VFE_REG_CFG, \
-        struct msm_vfe_cfg_cmd2)
+	_IOWR('V', MSM_VFE_REG_CFG, \
+		struct msm_vfe_cfg_cmd2)
 
 #define VIDIOC_MSM_ISP_REQUEST_BUF \
-    _IOWR('V', MSM_ISP_REQUEST_BUF, \
-        struct msm_isp_buf_request)
+	_IOWR('V', MSM_ISP_REQUEST_BUF, \
+		struct msm_isp_buf_request)
 
 #define VIDIOC_MSM_ISP_ENQUEUE_BUF \
-    _IOWR('V', MSM_ISP_ENQUEUE_BUF, \
-        struct msm_isp_qbuf_info)
+	_IOWR('V', MSM_ISP_ENQUEUE_BUF, \
+		struct msm_isp_qbuf_info)
 
 #define VIDIOC_MSM_ISP_RELEASE_BUF \
-    _IOWR('V', MSM_ISP_RELEASE_BUF, \
-        struct msm_isp_buf_request)
+	_IOWR('V', MSM_ISP_RELEASE_BUF, \
+		struct msm_isp_buf_request)
 
 #define VIDIOC_MSM_ISP_REQUEST_STREAM \
-    _IOWR('V', MSM_ISP_REQUEST_STREAM, \
-        struct msm_vfe_axi_stream_request_cmd)
+	_IOWR('V', MSM_ISP_REQUEST_STREAM, \
+		struct msm_vfe_axi_stream_request_cmd)
 
 #define VIDIOC_MSM_ISP32_REQUEST_STREAM \
-    _IOWR('V', MSM_ISP32_REQUEST_STREAM, \
-        struct msm_vfe32_axi_stream_request_cmd)
+	_IOWR('V', MSM_ISP32_REQUEST_STREAM, \
+		struct msm_vfe32_axi_stream_request_cmd)
 
 #define VIDIOC_MSM_ISP_CFG_STREAM \
-    _IOWR('V', MSM_ISP_CFG_STREAM, \
-        struct msm_vfe_axi_stream_cfg_cmd)
+	_IOWR('V', MSM_ISP_CFG_STREAM, \
+		struct msm_vfe_axi_stream_cfg_cmd)
 
 #define VIDIOC_MSM_ISP_RELEASE_STREAM \
-    _IOWR('V', MSM_ISP_RELEASE_STREAM, \
-        struct msm_vfe_axi_stream_release_cmd)
+	_IOWR('V', MSM_ISP_RELEASE_STREAM, \
+		struct msm_vfe_axi_stream_release_cmd)
 
 #define VIDIOC_MSM_ISP_INPUT_CFG \
-    _IOWR('V', MSM_ISP_INPUT_CFG, \
-        struct msm_vfe_input_cfg)
+	_IOWR('V', MSM_ISP_INPUT_CFG, \
+		struct msm_vfe_input_cfg)
 
 #define VIDIOC_MSM_ISP_SET_SRC_STATE \
-    _IOWR('V', MSM_ISP_SET_SRC_STATE, \
-        struct msm_vfe_axi_src_state)
+	_IOWR('V', MSM_ISP_SET_SRC_STATE, \
+		struct msm_vfe_axi_src_state)
 
 #define VIDIOC_MSM_ISP_REQUEST_STATS_STREAM \
-    _IOWR('V', MSM_ISP_REQUEST_STATS_STREAM, \
-        struct msm_vfe_stats_stream_request_cmd)
+	_IOWR('V', MSM_ISP_REQUEST_STATS_STREAM, \
+		struct msm_vfe_stats_stream_request_cmd)
 
 #define VIDIOC_MSM_ISP_CFG_STATS_STREAM \
-    _IOWR('V', MSM_ISP_CFG_STATS_STREAM, \
-        struct msm_vfe_stats_stream_cfg_cmd)
+	_IOWR('V', MSM_ISP_CFG_STATS_STREAM, \
+		struct msm_vfe_stats_stream_cfg_cmd)
 
 #define VIDIOC_MSM_ISP_RELEASE_STATS_STREAM \
-    _IOWR('V', MSM_ISP_RELEASE_STATS_STREAM, \
-        struct msm_vfe_stats_stream_release_cmd)
+	_IOWR('V', MSM_ISP_RELEASE_STATS_STREAM, \
+		struct msm_vfe_stats_stream_release_cmd)
 
 #define VIDIOC_MSM_ISP_REG_UPDATE_CMD \
-    _IOWR('V', MSM_ISP_REG_UPDATE_CMD, \
-        enum msm_vfe_input_src)
+	_IOWR('V', MSM_ISP_REG_UPDATE_CMD, \
+		enum msm_vfe_input_src)
 
 #define VIDIOC_MSM_ISP_UPDATE_STREAM \
-    _IOWR('V', MSM_ISP_UPDATE_STREAM, \
-        struct msm_vfe_axi_stream_update_cmd)
+	_IOWR('V', MSM_ISP_UPDATE_STREAM, \
+		struct msm_vfe_axi_stream_update_cmd)
 
 #define VIDIOC_MSM_VFE_REG_LIST_CFG \
-    _IOWR('V', MSM_VFE_REG_LIST_CFG, \
-        struct msm_vfe_cfg_cmd_list)
+	_IOWR('V', MSM_VFE_REG_LIST_CFG, \
+		struct msm_vfe_cfg_cmd_list)
 
 #define VIDIOC_MSM_ISP_SMMU_ATTACH \
-    _IOWR('V', MSM_ISP_SMMU_ATTACH, \
-        struct msm_vfe_smmu_attach_cmd)
+	_IOWR('V', MSM_ISP_SMMU_ATTACH, \
+		struct msm_vfe_smmu_attach_cmd)
 
 #define VIDIOC_MSM_ISP_UPDATE_STATS_STREAM \
-    _IOWR('V', MSM_ISP_UPDATE_STATS_STREAM, \
-        struct msm_vfe_axi_stream_update_cmd)
+	_IOWR('V', MSM_ISP_UPDATE_STATS_STREAM, \
+		struct msm_vfe_axi_stream_update_cmd)
 
 #define VIDIOC_MSM_ISP_AXI_HALT \
-    _IOWR('V', MSM_ISP_AXI_HALT, \
-        struct msm_vfe_axi_halt_cmd)
+	_IOWR('V', MSM_ISP_AXI_HALT, \
+		struct msm_vfe_axi_halt_cmd)
 
 #define VIDIOC_MSM_ISP_AXI_RESET \
-    _IOWR('V', MSM_ISP_AXI_RESET, \
-        struct msm_vfe_axi_reset_cmd)
+	_IOWR('V', MSM_ISP_AXI_RESET, \
+		struct msm_vfe_axi_reset_cmd)
 
 #define VIDIOC_MSM_ISP_AXI_RESTART \
-    _IOWR('V', MSM_ISP_AXI_RESTART, \
-        struct msm_vfe_axi_restart_cmd)
+	_IOWR('V', MSM_ISP_AXI_RESTART, \
+		struct msm_vfe_axi_restart_cmd)
 
 #define VIDIOC_MSM_ISP_RESTART_FE \
-    _IOWR('V', MSM_ISP_RESTART_FE,\
-        struct msm_vfe_restart_fe_cmd)
+	_IOWR('V', MSM_ISP_RESTART_FE,\
+		struct msm_vfe_restart_fe_cmd)
 
 #define VIDIOC_MSM_ISP_FETCH_ENG_START \
-    _IOWR('V', MSM_ISP_FETCH_ENG_START, \
-        struct msm_vfe_fetch_eng_start)
+	_IOWR('V', MSM_ISP_FETCH_ENG_START, \
+		struct msm_vfe_fetch_eng_start)
 
 #define VIDIOC_MSM_ISP_DEQUEUE_BUF \
-    _IOWR('V', MSM_ISP_DEQUEUE_BUF, \
-        struct msm_isp_qbuf_info)
+	_IOWR('V', MSM_ISP_DEQUEUE_BUF, \
+		struct msm_isp_qbuf_info)
 
 #define VIDIOC_MSM_ISP_SET_DUAL_HW_MASTER_SLAVE \
-    _IOWR('V', MSM_ISP_SET_DUAL_HW_MASTER_SLAVE, \
-        struct msm_isp_set_dual_hw_ms_cmd)
+	_IOWR('V', MSM_ISP_SET_DUAL_HW_MASTER_SLAVE, \
+		struct msm_isp_set_dual_hw_ms_cmd)
 
 #define VIDIOC_MSM_ISP_MAP_BUF_START_FE \
-    _IOWR('V', MSM_ISP_MAP_BUF_START_FE, \
-        struct msm_vfe_fetch_eng_start)
+	_IOWR('V', MSM_ISP_MAP_BUF_START_FE, \
+		struct msm_vfe_fetch_eng_start)
 
 #define VIDIOC_MSM_ISP_UPDATE_FE_FRAME_ID \
-    _IOWR('V', MSM_ISP_UPDATE_FE_FRAME_ID, \
-        struct msm_vfe_update_fe_frame_id)
+	_IOWR('V', MSM_ISP_UPDATE_FE_FRAME_ID, \
+		struct msm_vfe_update_fe_frame_id)
 
 #define VIDIOC_MSM_ISP_UNMAP_BUF \
-    _IOWR('V', MSM_ISP_UNMAP_BUF, \
-        struct msm_isp_unmap_buf_req)
+	_IOWR('V', MSM_ISP_UNMAP_BUF, \
+		struct msm_isp_unmap_buf_req)
+
+#define VIDIOC_MSM_ISP_AHB_CLK_CFG \
+	_IOWR('V', BASE_VIDIOC_PRIVATE+25, struct msm_isp_ahb_clk_cfg)
 
 #define VIDIOC_MSM_ISP_FETCH_ENG_MULTI_PASS_START \
-    _IOWR('V', MSM_ISP_FETCH_ENG_MULTI_PASS_START, \
-        struct msm_vfe_fetch_eng_multi_pass_start)
+	_IOWR('V', MSM_ISP_FETCH_ENG_MULTI_PASS_START, \
+		struct msm_vfe_fetch_eng_multi_pass_start)
 
 #define VIDIOC_MSM_ISP_MAP_BUF_START_MULTI_PASS_FE \
-    _IOWR('V', MSM_ISP_MAP_BUF_START_MULTI_PASS_FE, \
-        struct msm_vfe_fetch_eng_multi_pass_start)
-
-#define VIDIOC_MSM_ISP_AHB_CLK_CFG_MIDO \
-    _IOWR('V', BASE_VIDIOC_PRIVATE+25, struct msm_isp_ahb_clk_cfg)
-
-#define VIDIOC_MSM_ISP_AHB_CLK_CFG_NON_MIDO \
-    _IOWR('V', MSM_ISP_AHB_CLK_CFG, struct msm_isp_ahb_clk_cfg)
-
-#define VIDIOC_MSM_ISP_AHB_CLK_CFG     VIDIOC_MSM_ISP_AHB_CLK_CFG_NON_MIDO
+	_IOWR('V', MSM_ISP_MAP_BUF_START_MULTI_PASS_FE, \
+		struct msm_vfe_fetch_eng_multi_pass_start)
 
 #define VIDIOC_MSM_ISP_CFG_HW_STATE \
-    _IOWR('V', MSM_ISP_CFG_HW_STATE, \
-        struct msm_vfe_axi_stream_cfg_cmd)
-
+	_IOWR('V', MSM_ISP_CFG_HW_STATE, \
+		struct msm_vfe_axi_stream_cfg_cmd)
 
 #define VIDIOC_MSM_ISP_BUF_DONE \
-    _IOWR('V', BASE_VIDIOC_PRIVATE+21, struct msm_isp32_event_data)
+	_IOWR('V', BASE_VIDIOC_PRIVATE+21, struct msm_isp32_event_data)
 
 #endif/* __MSMB_ISP__ */

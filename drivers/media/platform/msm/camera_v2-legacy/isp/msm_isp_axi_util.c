@@ -117,6 +117,8 @@ void msm_isp_axi_destroy_stream(
 	if (axi_data->stream_info[stream_idx].state != AVAILABLE) {
 		axi_data->stream_info[stream_idx].state = AVAILABLE;
 		axi_data->stream_info[stream_idx].stream_handle = 0;
+    		memset(&axi_data->stream_info[stream_idx].request_queue_cmd,
+			0, sizeof(axi_data->stream_info[stream_idx].request_queue_cmd));
 	} else {
 		pr_err("%s: stream does not exist\n", __func__);
 	}
@@ -723,6 +725,7 @@ void msm_isp_update_framedrop_reg(struct vfe_device *vfe_dev,
 void msm_isp_reset_framedrop(struct vfe_device *vfe_dev,
 	struct msm_vfe_axi_stream *stream_info)
 {
+	uint32_t framedrop_period = 0;
 	stream_info->runtime_num_burst_capture = stream_info->num_burst_capture;
 
 	/**
@@ -731,9 +734,15 @@ void msm_isp_reset_framedrop(struct vfe_device *vfe_dev,
 	 *  by the request frame api
 	 */
 	if (!stream_info->controllable_output) {
-		stream_info->current_framedrop_period =
+		framedrop_period =
 			msm_isp_get_framedrop_period(
 			stream_info->frame_skip_pattern);
+		if (stream_info->frame_skip_pattern == SKIP_ALL)
+			stream_info->current_framedrop_period =
+				MSM_VFE_STREAM_STOP_PERIOD;
+		else
+			stream_info->current_framedrop_period =
+				framedrop_period;
 	}
 
 	msm_isp_cfg_framedrop_reg(vfe_dev, stream_info);
@@ -3517,6 +3526,9 @@ static int msm_isp_request_frame(struct vfe_device *vfe_dev,
 			stream_info->undelivered_request_cnt--;
 			pr_err_ratelimited("%s:%d fail to cfg HAL buffer\n",
 				__func__, __LINE__);
+			queue_req->cmd_used = 0;
+			list_del(&queue_req->list);
+			stream_info->request_q_cnt--;
 			return rc;
 		}
 
@@ -3563,6 +3575,9 @@ static int msm_isp_request_frame(struct vfe_device *vfe_dev,
 						flags);
 			pr_err_ratelimited("%s:%d fail to cfg HAL buffer\n",
 				__func__, __LINE__);
+			queue_req->cmd_used = 0;
+			list_del(&queue_req->list);
+			stream_info->request_q_cnt--;
 			return rc;
 		}
 	} else {

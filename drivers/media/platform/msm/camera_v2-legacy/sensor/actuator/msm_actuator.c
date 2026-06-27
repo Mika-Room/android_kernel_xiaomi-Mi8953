@@ -29,9 +29,9 @@ DEFINE_MSM_MUTEX(msm_actuator_mutex);
 #define CDBG(fmt, args...) pr_debug(fmt, ##args)
 #endif
 
-#define PARK_LENS_LONG_STEP 7
-#define PARK_LENS_MID_STEP 5
-#define PARK_LENS_SMALL_STEP 3
+#define PARK_LENS_LONG_STEP 3
+#define PARK_LENS_MID_STEP 2
+#define PARK_LENS_SMALL_STEP 1
 #define MAX_QVALUE 4096
 #if IS_ENABLED(CONFIG_MACH_XIAOMI_MIDO)
 #define PARK_LENS_QUIET_UPPER_CODE 400
@@ -892,9 +892,9 @@ static int32_t msm_actuator_park_lens(struct msm_actuator_ctrl_t *a_ctrl)
                     PARK_LENS_SMALL_STEP);
             } else {
                 next_lens_pos = (next_lens_pos >
-                    a_ctrl->park_lens.max_step) ?
+                    a_ctrl->park_lens.max_step/4) ?
                     (next_lens_pos - a_ctrl->park_lens.
-                    max_step) : 0;
+                    max_step/4) : 0;
             }
         }
 		a_ctrl->func_tbl->actuator_parse_i2c_params(a_ctrl,
@@ -1864,7 +1864,7 @@ static int32_t msm_actuator_power_up(struct msm_actuator_ctrl_t *a_ctrl)
 	}
 
 	/* VREG needs some delay to power up */
-	usleep_range(2000, 3000);
+	usleep_range(12000, 14000);
 	a_ctrl->actuator_state = ACT_ENABLE_STATE;
 
 	CDBG("Exit\n");
