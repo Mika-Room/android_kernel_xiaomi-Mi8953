@@ -3306,8 +3306,11 @@ static int msm_anlg_cdc_codec_enable_lo_pa(struct snd_soc_dapm_widget *w,
 			msm_spk_ext_pa_ctrl(pdata, true);
 			pr_debug("At %d In (%s), close pa, spk_ext_pa_gpio_lc=%d\n", __LINE__, __FUNCTION__, gpio_get_value(pdata->spk_ext_pa_gpio_lc));
 			pdata->pa_is_on = 0;
-			usleep_range(4000, 5000);
 		}
+#endif
+#if IS_ENABLED(CONFIG_MACH_XIAOMI_MIDO) || \
+    IS_ENABLED(CONFIG_MACH_XIAOMI_YSL)
+		usleep_range(4000, 4100);
 #endif
 		msm_anlg_cdc_dig_notifier_call(codec,
 				       DIG_CDC_EVENT_RX3_MUTE_ON);
