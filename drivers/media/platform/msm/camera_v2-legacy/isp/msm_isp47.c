@@ -2618,11 +2618,6 @@ int msm_vfe47_enable_regulators(struct vfe_device *vfe_dev, int enable)
 int msm_vfe47_get_platform_data(struct vfe_device *vfe_dev)
 {
     int rc = 0;
-    int rc = 0;
-#ifndef CONFIG_MACH_XIAOMI_MIDO
-	void __iomem *vfe_fuse_base;
-	uint32_t vfe_fuse_base_size;
-#endif
 
 	vfe_dev->vfe_base = msm_camera_get_reg_base(vfe_dev->pdev, "vfe", 0);
 	if (!vfe_dev->vfe_base)
