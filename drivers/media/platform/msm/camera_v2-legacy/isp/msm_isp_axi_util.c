@@ -3044,7 +3044,11 @@ static int msm_isp_start_axi_stream(struct vfe_device *vfe_dev,
 		}
 	}
 	mutex_unlock(&vfe_dev->buf_mgr->lock);
-	msm_isp_update_stream_bandwidth(vfe_dev, stream_cfg_cmd->hw_state);
+	if (xiaomi_msm8953_mach_get() == XIAOMI_MSM8953_MACH_MIDO) {
+        msm_isp_update_stream_bandwidth(vfe_dev, 0);
+    } else {
+        msm_isp_update_stream_bandwidth(vfe_dev, stream_cfg_cmd->hw_state);
+    }
 	vfe_dev->hw_info->vfe_ops.axi_ops.reload_wm(vfe_dev,
 		vfe_dev->vfe_base, wm_reload_mask);
 	msm_isp_update_camif_output_count(vfe_dev, stream_cfg_cmd);
@@ -3250,7 +3254,11 @@ static int msm_isp_stop_axi_stream(struct vfe_device *vfe_dev,
 
 	msm_isp_update_camif_output_count(vfe_dev, stream_cfg_cmd);
 
-	msm_isp_update_stream_bandwidth(vfe_dev, stream_cfg_cmd->hw_state);
+	if (xiaomi_msm8953_mach_get() == XIAOMI_MSM8953_MACH_MIDO) {
+        msm_isp_update_stream_bandwidth(vfe_dev, 0);
+    } else {
+        msm_isp_update_stream_bandwidth(vfe_dev, stream_cfg_cmd->hw_state);
+    }
 
 	for (i = 0; i < stream_cfg_cmd->num_streams; i++) {
 		stream_info = &axi_data->stream_info[
