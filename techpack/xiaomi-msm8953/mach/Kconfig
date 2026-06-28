@@ -43,7 +43,19 @@ config MACH_XIAOMI_TISSOT
 	help
 	  Support for Xiaomi Mi a1 (tissot).
 
+config MACH_XIAOMI_TIFFANY
+	bool "Xiaomi Mi 5X (tiffany)"
+	depends on ARCH_MSM8953
+	select MACH_FAMILY_XIAOMI_QRD_MSM8953
+	help
+	  Support for Xiaomi Mi a1 (tissot).
+
 config MACH_XIAOMI_MIDO
+	bool "Xiaomi Redmi 4 (mido)"
+	help
+	  Support for Xiaomi Redmi 4 (mido).
+
+config MACH_XIAOMI_MARKW
 	bool "Xiaomi Redmi 4 (mido)"
 	help
 	  Support for Xiaomi Redmi 4 (mido).
@@ -54,3 +66,18 @@ config MACH_XIAOMI_YSL
 	select MACH_FAMILY_XIAOMI_MTP
 	help
 	  Support for Xiaomi Redmi S2 / Y2 (ysl).
+
+config TAS2557_REGMAP
+	bool  "Texas Audio TAS2557"
+	help
+	  Support for the Xiaomi Redmi 5 Plus platform.
+
+config TAS2557_CODEC
+	bool  "Texas Audio TAS2557"
+	help
+	  Support for the Xiaomi Redmi 5 Plus platform.
+
+config TAS2557_MISC
+	bool  "Texas Audio TAS2557"
+	help
+	  Support for the Xiaomi Redmi 5 Plus platform.

@@ -26,11 +26,15 @@ static const xiaomi_msm8953_mach_info_t xiaomi_msm8953_mach_table[XIAOMI_MSM8953
 	// Family QRD (MSM8953)
 	[XIAOMI_MSM8953_MACH_VINCE] = {XIAOMI_MSM8953_MACH_FAMILY_QRD, "xiaomi,vince", "vince", "Redmi 5 Plus"},
 
-	[XIAOMI_MSM8953_MACH_TISSOT] = {XIAOMI_MSM8953_MACH_FAMILY_QRD, "xiaomi,tissot", "tissot", "Redmi 4 Mi A1"},
+	[XIAOMI_MSM8953_MACH_TISSOT] = {XIAOMI_MSM8953_MACH_FAMILY_QRD, "xiaomi,tissot", "tissot", "Mi A1"},
+
+	[XIAOMI_MSM8953_MACH_TIFFANY] = {XIAOMI_MSM8953_MACH_FAMILY_QRD, "xiaomi,tiffany", "tiffany", "Mi 5X"},
 
 	[XIAOMI_MSM8953_MACH_SAKURA] = {XIAOMI_MSM8953_MACH_FAMILY_QRD, "xiaomi,sakura", "sakura", "Redmi 6 Pro"},
 
 	[XIAOMI_MSM8953_MACH_MIDO] = {XIAOMI_MSM8953_MACH_FAMILY_QRD, "xiaomi,mido", "mido", "Redmi Note 4 / 4x"},
+
+	[XIAOMI_MSM8953_MACH_MARKW] = {XIAOMI_MSM8953_MACH_FAMILY_QRD, "xiaomi,markw", "markw", "Redmi 4 Prime"},
 };
 
 static enum xiaomi_msm8953_mach_types saved_mach = XIAOMI_MSM8953_MACH_UNKNOWN;
