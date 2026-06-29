@@ -1,25 +1,25 @@
 ifeq ($(CONFIG_MSMB_CAMERA_LEGACY_N),y)
-ccflags-y += -Itechpack/camera-legacy
-ccflags-y += -Itechpack/camera-legacy/sensor
-ccflags-y += -Itechpack/camera-legacy/codecs
-ccflags-y += -Itechpack/camera-legacy/isps
-ccflags-y += -Itechpack/camera-legacy/pproc
-ccflags-y += -Itechpack/camera-legacy/msm_vb2
-ccflags-y += -Itechpack/camera-legacy/camera
-ccflags-y += -Itechpack/camera-legacy/jpeg_10
-ccflags-y += -Itechpack/camera-legacy/jpeg_dma
-ccflags-y += -Itechpack/camera-legacy/fd
-ccflags-y += -Itechpack/camera-legacy/common
+ccflags-y += -Itechpack/camera-legacy-n
+ccflags-y += -Itechpack/camera-legacy-n/sensor
+ccflags-y += -Itechpack/camera-legacy-n/codecs
+ccflags-y += -Itechpack/camera-legacy-n/isps
+ccflags-y += -Itechpack/camera-legacy-n/pproc
+ccflags-y += -Itechpack/camera-legacy-n/msm_vb2
+ccflags-y += -Itechpack/camera-legacy-n/camera
+ccflags-y += -Itechpack/camera-legacy-n/jpeg_10
+ccflags-y += -Itechpack/camera-legacy-n/jpeg_dma
+ccflags-y += -Itechpack/camera-legacy-n/fd
+ccflags-y += -Itechpack/camera-legacy-n/common
 
 # Use USERINCLUDE when you must reference the UAPI directories only.
 USERINCLUDE     += \
-                -I$(srctree)/techpack/camera-legacy/include/uapi \
+                -I$(srctree)/techpack/camera-legacy-n/include/uapi \
 
 # Use LINUXINCLUDE when you must reference the include/ directory.
 # Needed to be compatible with the O= option
 LINUXINCLUDE    += \
-                -I$(srctree)/techpack/camera-legacy/include \
-                -I$(srctree)/techpack/camera-legacy/include/uapi
+                -I$(srctree)/techpack/camera-legacy-n/include \
+                -I$(srctree)/techpack/camera-legacy-n/include/uapi
 
 obj-$(CONFIG_MSMB_CAMERA_LEGACY_N) += init.o
 

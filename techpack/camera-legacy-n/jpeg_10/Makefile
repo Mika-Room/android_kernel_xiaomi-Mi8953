@@ -1,5 +1,5 @@
-ccflags-y += -Itechpack/camera-legacy/jpeg_10
-ccflags-y += -Itechpack/camera-legacy/sensor/io
-ccflags-y += -Itechpack/camera-legacy/common
+ccflags-y += -Itechpack/camera-legacy-n/jpeg_10
+ccflags-y += -Itechpack/camera-legacy-n/sensor/io
+ccflags-y += -Itechpack/camera-legacy-n/common
 
 obj-$(CONFIG_MSMB_JPEG) += msm_jpeg_dev.o msm_jpeg_sync.o msm_jpeg_core.o msm_jpeg_hw.o msm_jpeg_platform.o

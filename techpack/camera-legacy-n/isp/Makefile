@@ -1,6 +1,6 @@
-ccflags-y += -Itechpack/camera-legacy
-ccflags-y += -Itechpack/camera-legacy/sensor/io
-ccflags-y += -Itechpack/camera-legacy/common/
+ccflags-y += -Itechpack/camera-legacy-n
+ccflags-y += -Itechpack/camera-legacy-n/sensor/io
+ccflags-y += -Itechpack/camera-legacy-n/common/
 ifeq ($(CONFIG_MSM_ISP_V1),y)
 obj-$(CONFIG_MSMB_CAMERA) += msm_isp_32.o msm_buf_mgr_32.o msm_isp_util_32.o msm_isp_axi_util_32.o msm_isp_stats_util_32.o
 obj-$(CONFIG_MSMB_CAMERA) += msm_isp32.o
