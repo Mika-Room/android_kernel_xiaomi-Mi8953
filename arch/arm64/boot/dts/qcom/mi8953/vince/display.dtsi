@@ -99,6 +99,10 @@
 
 &mdss_dsi0 {
 	qcom,dsi-pref-prim-pan = <&dsi_td4310_fhdplus_e7_vid>;
+	pinctrl-0 = <&mdss_dsi_active &mdss_te_active>;
+	pinctrl-1 = <&mdss_dsi_suspend &mdss_te_suspend>;
+	qcom,platform-te-gpio = <&tlmm 24 0>;
+	qcom,platform-reset-gpio = <&tlmm 61 0>;
 };
 
 &dsi_td4310_fhdplus_e7_vid {
