@@ -1,6 +1,7 @@
 #include "android.dtsi"
 #include "regulator.dtsi"
 #include "display.dtsi"
+#include "rosy-qrd.dtsi"
 #include "touchscreen.dtsi"
 #include "camera.dtsi"
 #include "audio.dtsi"
