@@ -834,11 +834,11 @@ static int lineout_status_get(struct snd_kcontrol *kcontrol,
 static int lineout_status_put(struct snd_kcontrol *kcontrol,
     struct snd_ctl_elem_value *ucontrol)
 {
+	int state = 0;
     if (xiaomi_msm8953_mach_get() != XIAOMI_MSM8953_MACH_ROSY) {
         return 0;
     }
 
-    int state = 0;
     state = ucontrol->value.integer.value[0];
     pr_debug("%s:  external speaker PA mode:%d\n", __func__, state);
 
