@@ -333,7 +333,7 @@ static irqreturn_t gf_irq(int irq, void *handle)
 		schedule_work(&gf_dev->work);
 	}
 #elif defined(GF_FASYNC)
-	struct gf_dev *gf_dev = &rosy_gf;
+	struct gf_dev *gf_dev = &gf;
 
 	if (gf_dev->async)
 		kill_fasync(&gf_dev->async, SIGIO, POLL_IN);
@@ -346,7 +346,7 @@ static int irq_setup(struct gf_dev *gf_dev)
 {
 	int status;
 
-	gf_dev->irq = gf_irq_num(gf_dev);
+	gf_dev->irq = rosy_gf_irq_num(gf_dev);
 	status = request_threaded_irq(gf_dev->irq, NULL, gf_irq,
 			IRQF_TRIGGER_RISING | IRQF_ONESHOT,
 			"gf", gf_dev);
@@ -453,7 +453,7 @@ static long gf_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 
 	case GF_IOC_RESET:
 		pr_debug("%s GF_IOC_RESET\n", __func__);
-		gf_hw_reset(gf_dev, 3);
+		rosy_gf_hw_reset(gf_dev, 3);
 		break;
 
 	case GF_IOC_INPUT_KEY_EVENT:
@@ -499,12 +499,12 @@ static long gf_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 
 	case GF_IOC_ENABLE_POWER:
 		pr_debug("%s GF_IOC_ENABLE_POWER\n", __func__);
-		gf_power_on(gf_dev);
+		rosy_gf_power_on(gf_dev);
 		break;
 
 	case GF_IOC_DISABLE_POWER:
 		pr_debug("%s GF_IOC_DISABLE_POWER\n", __func__);
-		gf_power_off(gf_dev);
+		rosy_gf_power_off(gf_dev);
 		break;
 
 	case GF_IOC_ENTER_SLEEP_MODE:
@@ -579,7 +579,7 @@ static int gf_open(struct inode *inode, struct file *filp)
 				if (status)
 					goto err_irq;
 			}
-			gf_hw_reset(gf_dev, 3);
+			rosy_gf_hw_reset(gf_dev, 3);
 			gf_dev->device_available = 1;
 		}
 	} else {
@@ -637,7 +637,7 @@ static int gf_release(struct inode *inode, struct file *filp)
 		}
 		devm_free_irq(dev, gpio_to_irq(gf_dev->irq_gpio), gf_dev);
 
-		gf_power_off(gf_dev);
+		rosy_gf_power_off(gf_dev);
 	}
 	mutex_unlock(&device_list_lock);
 	return status;
@@ -720,7 +720,7 @@ static int gf_probe(struct spi_device *spi)
 static int gf_probe(struct platform_device *pdev)
 #endif
 {
-	struct gf_dev *gf_dev = &rosy_gf;
+	struct gf_dev *gf_dev = &gf;
 	int status = -EINVAL;
 	unsigned long minor;
 	int i;
