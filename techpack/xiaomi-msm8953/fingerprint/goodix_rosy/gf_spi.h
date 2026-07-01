@@ -142,16 +142,16 @@ struct gf_dev {
 	struct work_struct work;
 };
 
-int gf_parse_dts(struct gf_dev *gf_dev);
-void gf_cleanup(struct gf_dev *gf_dev);
+int rosy_gf_parse_dts(struct gf_dev *gf_dev);
+void rosy_gf_cleanup(struct gf_dev *gf_dev);
 
-int gf_power_on(struct gf_dev *gf_dev);
-int gf_power_off(struct gf_dev *gf_dev);
+int rosy_gf_power_on(struct gf_dev *gf_dev);
+int rosy_gf_power_off(struct gf_dev *gf_dev);
 
-int gf_hw_reset(struct gf_dev *gf_dev, unsigned int delay_ms);
-int gf_irq_num(struct gf_dev *gf_dev);
+int rosy_gf_hw_reset(struct gf_dev *gf_dev, unsigned int delay_ms);
+int rosy_gf_irq_num(struct gf_dev *gf_dev);
 
-void sendnlmsg(char *msg);
-int netlink_init(void);
-void netlink_exit(void);
+int rosy_sendnlmsg(char *msg);
+int rosy_netlink_init(void);
+void rosy_netlink_exit(void);
 #endif /*__GF_SPI_H*/

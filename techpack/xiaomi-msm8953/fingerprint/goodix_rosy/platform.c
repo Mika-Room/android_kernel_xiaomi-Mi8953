@@ -20,7 +20,7 @@
 #include <linux/platform_device.h>
 #endif
 
-int gf_parse_dts(struct gf_dev *gf_dev)
+int rosy_gf_parse_dts(struct gf_dev *gf_dev)
 {
 	int rc = 0;
 	struct device *dev = &gf_dev->spi->dev;
@@ -57,7 +57,7 @@ err_reset:
 	return rc;
 }
 
-void gf_cleanup(struct gf_dev *gf_dev)
+void rosy_gf_cleanup(struct gf_dev *gf_dev)
 {
 	pr_info("[info] %s\n", __func__);
 
@@ -71,7 +71,7 @@ void gf_cleanup(struct gf_dev *gf_dev)
 	}
 }
 
-int gf_power_on(struct gf_dev *gf_dev)
+int rosy_gf_power_on(struct gf_dev *gf_dev)
 {
 	int rc = 0;
 
@@ -79,7 +79,7 @@ int gf_power_on(struct gf_dev *gf_dev)
 	return rc;
 }
 
-int gf_power_off(struct gf_dev *gf_dev)
+int rosy_gf_power_off(struct gf_dev *gf_dev)
 {
 	int rc = 0;
 
@@ -88,7 +88,7 @@ int gf_power_off(struct gf_dev *gf_dev)
 	return rc;
 }
 
-int gf_hw_reset(struct gf_dev *gf_dev, unsigned int delay_ms)
+int rosy_gf_hw_reset(struct gf_dev *gf_dev, unsigned int delay_ms)
 {
 	if (gf_dev == NULL) {
 		pr_info("Input buff is NULL.\n");
@@ -102,7 +102,7 @@ int gf_hw_reset(struct gf_dev *gf_dev, unsigned int delay_ms)
 	return 0;
 }
 
-int gf_irq_num(struct gf_dev *gf_dev)
+int rosy_gf_irq_num(struct gf_dev *gf_dev)
 {
 	if (gf_dev == NULL) {
 		pr_info("Input buff is NULL.\n");

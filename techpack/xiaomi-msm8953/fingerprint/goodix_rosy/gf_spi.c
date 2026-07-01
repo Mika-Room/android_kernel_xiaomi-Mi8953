@@ -327,13 +327,13 @@ static irqreturn_t gf_irq(int irq, void *handle)
 	struct gf_dev *gf_dev = &gf;
 
 	__pm_wakeup_event(&fp_wakelock, msecs_to_jiffies(WAKELOCK_HOLD_TIME));
-	sendnlmsg(&msg);
+	rosy_sendnlmsg(&msg);
 	if ((gf_dev->wait_finger_down == true) && (gf_dev->device_available == 1) && (gf_dev->fb_black == 1)) {
 		gf_dev->wait_finger_down = false;
 		schedule_work(&gf_dev->work);
 	}
 #elif defined(GF_FASYNC)
-	struct gf_dev *gf_dev = &gf;
+	struct gf_dev *gf_dev = &rosy_gf;
 
 	if (gf_dev->async)
 		kill_fasync(&gf_dev->async, SIGIO, POLL_IN);
@@ -518,7 +518,7 @@ static long gf_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	case GF_IOC_REMOVE:
 		pr_debug("%s GF_IOC_REMOVE\n", __func__);
 		irq_cleanup(gf_dev);
-		gf_cleanup(gf_dev);
+		rosy_gf_cleanup(gf_dev);
 		break;
 
 	case GF_IOC_CHIP_INFO:
@@ -571,7 +571,7 @@ static int gf_open(struct inode *inode, struct file *filp)
 			pr_info("Succeed to open device. irq = %d\n",
 					gf_dev->irq);
 			if (gf_dev->users == 1) {
-				status = gf_parse_dts(gf_dev);
+					status = rosy_gf_parse_dts(gf_dev);
 				if (status)
 					goto err_parse_dt;
 
@@ -589,7 +589,7 @@ static int gf_open(struct inode *inode, struct file *filp)
 
 	return status;
 err_irq:
-	gf_cleanup(gf_dev);
+	rosy_gf_cleanup(gf_dev);
 err_parse_dt:
 	return status;
 }
@@ -682,7 +682,7 @@ static int goodix_fb_state_chg_callback(struct notifier_block *nb,
 				gf_dev->wait_finger_down = true;
 #if defined(GF_NETLINK_ENABLE)
 				msg = GF_NET_EVENT_FB_BLACK;
-				sendnlmsg(&msg);
+				rosy_sendnlmsg(&msg);
 #elif defined(GF_FASYNC)
 				if (gf_dev->async)
 					kill_fasync(&gf_dev->async, SIGIO, POLL_IN);
@@ -694,7 +694,7 @@ static int goodix_fb_state_chg_callback(struct notifier_block *nb,
 				gf_dev->fb_black = 0;
 #if defined(GF_NETLINK_ENABLE)
 				msg = GF_NET_EVENT_FB_UNBLACK;
-				sendnlmsg(&msg);
+				rosy_sendnlmsg(&msg);
 #elif defined(GF_FASYNC)
 				if (gf_dev->async)
 					kill_fasync(&gf_dev->async, SIGIO, POLL_IN);
@@ -720,7 +720,7 @@ static int gf_probe(struct spi_device *spi)
 static int gf_probe(struct platform_device *pdev)
 #endif
 {
-	struct gf_dev *gf_dev = &gf;
+	struct gf_dev *gf_dev = &rosy_gf;
 	int status = -EINVAL;
 	unsigned long minor;
 	int i;
@@ -906,7 +906,7 @@ static int __init gf_init(void)
 	}
 
 #ifdef GF_NETLINK_ENABLE
-	netlink_init();
+	rosy_netlink_init();
 #endif
 	pr_info("status = 0x%x\n", status);
 	return 0;
@@ -916,7 +916,7 @@ module_init(gf_init);
 static void __exit gf_exit(void)
 {
 #ifdef GF_NETLINK_ENABLE
-	netlink_exit();
+	rosy_netlink_exit();
 #endif
 #if defined(USE_PLATFORM_BUS)
 	platform_driver_unregister(&gf_driver);
