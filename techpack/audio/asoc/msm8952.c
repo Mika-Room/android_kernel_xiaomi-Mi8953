@@ -3671,9 +3671,13 @@ static int __init msm8952_machine_init(void)
 			mbhc_cfg.key_code[2] = KEY_NEXTSONG_NEW;
 			mbhc_cfg.key_code[3] = KEY_VOICECOMMAND;
 			break;
+		case XIAOMI_MSM8953_MACH_MIDO:
+			mbhc_cfg.key_code[1] = BTN_1;
+			mbhc_cfg.key_code[2] = BTN_2;
+			mbhc_cfg.key_code[3] = 0;
+			break;
 		case XIAOMI_MSM8953_MACH_YSL:
 		case XIAOMI_MSM8953_MACH_VINCE:
-		case XIAOMI_MSM8953_MACH_MIDO:
 		case XIAOMI_MSM8953_MACH_MARKW:
 		case XIAOMI_MSM8953_MACH_SAKURA:
 			mbhc_cfg.key_code[1] = KEY_MEDIA;
