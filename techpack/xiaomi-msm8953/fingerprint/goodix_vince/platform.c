@@ -20,7 +20,7 @@
 		} while (0)
 
 
-static int vince_gf3208_request_named_gpio(struct gf_dev *gf_dev, const char *label, int *gpio)
+static int gf3208_request_named_gpio(struct gf_dev *gf_dev, const char *label, int *gpio)
 {
 	struct device *dev = &gf_dev->spi->dev;
 	struct device_node *np = dev->of_node;
@@ -40,7 +40,7 @@ static int vince_gf3208_request_named_gpio(struct gf_dev *gf_dev, const char *la
 }
 
 #ifdef ENABLE_PINCTRL
-static int vince_select_pin_ctl(struct gf_dev *gf_dev, const char *name)
+static int select_pin_ctl(struct gf_dev *gf_dev, const char *name)
 {
 	size_t i;
 	int rc;
@@ -76,14 +76,14 @@ int vince_gf_parse_dts(struct gf_dev *gf_dev)
 	pr_warn("--------gf_parse_dts start  haijun.--------\n");
 
 	/*get reset resource*/
-	rc = vince_gf3208_request_named_gpio(gf_dev, "goodix,gpio_reset", &gf_dev->reset_gpio);
+	rc = gf3208_request_named_gpio(gf_dev, "goodix,gpio_reset", &gf_dev->reset_gpio);
 	if (rc) {
 		gf_dbg("Failed to request RESET GPIO. rc = %d\n", rc);
 		return -EPERM;
 	}
 
 	/*get irq resourece*/
-	rc = vince_gf3208_request_named_gpio(gf_dev, "goodix,gpio_irq", &gf_dev->irq_gpio);
+	rc = gf3208_request_named_gpio(gf_dev, "goodix,gpio_irq", &gf_dev->irq_gpio);
 	if (rc) {
 		gf_dbg("Failed to request IRQ GPIO. rc = %d\n", rc);
 		return -EPERM;
@@ -104,10 +104,10 @@ int vince_gf_parse_dts(struct gf_dev *gf_dev)
 		gf_dev->pinctrl_state[i] = state;
 	}
 
-	rc = vince_select_pin_ctl(gf_dev, "goodixfp_reset_active");
+	rc = select_pin_ctl(gf_dev, "goodixfp_reset_active");
 	if (rc)
 		goto exit;
-	rc = vince_select_pin_ctl(gf_dev, "goodixfp_irq_active");
+	rc = select_pin_ctl(gf_dev, "goodixfp_irq_active");
 	if (rc)
 		goto exit;
 #endif
@@ -170,12 +170,12 @@ static int hw_reset(struct  gf_dev *gf_dev)
 	struct device *dev = &gf_dev->spi->dev;
 
 #ifdef ENABLE_PINCTRL
-	int rc = vince_select_pin_ctl(gf_dev, "goodixfp_reset_reset");
+	int rc = select_pin_ctl(gf_dev, "goodixfp_reset_reset");
 	if (rc)
 		goto exit;
 	mdelay(3);
 
-	rc = vince_select_pin_ctl(gf_dev, "goodixfp_reset_active");
+	rc = select_pin_ctl(gf_dev, "goodixfp_reset_active");
 	if (rc)
 		goto exit;
 #else

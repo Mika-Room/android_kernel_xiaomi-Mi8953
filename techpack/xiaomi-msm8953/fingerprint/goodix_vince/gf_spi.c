@@ -762,6 +762,8 @@ error:
 
 	vince_gf_cleanup(gf_dev);
 
+	gf_dev->device_available = 0;
+
 	return -EPERM;
 
 
@@ -772,9 +774,9 @@ error:
 
 static struct class *gf_class;
 #if defined(USE_SPI_BUS)
-static int vince_gf_probe(struct spi_device *spi)
+static int gf_probe(struct spi_device *spi)
 #elif defined(USE_PLATFORM_BUS)
-static int vince_gf_probe(struct platform_device *pdev)
+static int gf_probe(struct platform_device *pdev)
 #endif
 {
 	struct gf_dev *gf_dev = &gf;
@@ -899,9 +901,9 @@ static int vince_gf_probe(struct platform_device *pdev)
 }
 
 #if defined(USE_SPI_BUS)
-static int vince_gf_remove(struct spi_device *spi)
+static int gf_remove(struct spi_device *spi)
 #elif defined(USE_PLATFORM_BUS)
-static int vince_gf_remove(struct platform_device *pdev)
+static int gf_remove(struct platform_device *pdev)
 #endif
 {
 	struct gf_dev *gf_dev = &gf;
@@ -929,9 +931,9 @@ static int vince_gf_remove(struct platform_device *pdev)
 }
 
 #if defined(USE_SPI_BUS)
-static int vince_gf_suspend(struct spi_device *spi, pm_message_t mesg)
+static int gf_suspend(struct spi_device *spi, pm_message_t mesg)
 #elif defined(USE_PLATFORM_BUS)
-static int vince_gf_suspend(struct platform_device *pdev, pm_message_t state)
+static int gf_suspend(struct platform_device *pdev, pm_message_t state)
 #endif
 {
 	pr_info(KERN_ERR "gf_suspend_test.\n");
@@ -939,9 +941,9 @@ static int vince_gf_suspend(struct platform_device *pdev, pm_message_t state)
 }
 
 #if defined(USE_SPI_BUS)
-static int vince_gf_resume(struct spi_device *spi)
+static int gf_resume(struct spi_device *spi)
 #elif defined(USE_PLATFORM_BUS)
-static int vince_gf_resume(struct platform_device *pdev)
+static int gf_resume(struct platform_device *pdev)
 #endif
 {
 	pr_info(KERN_ERR "gf_resume_test.\n");
@@ -960,10 +962,10 @@ static struct spi_driver gf_driver = {
 #if defined(USE_SPI_BUS)
 
 #endif
-				.of_match_table = gx_match_table, }, .probe = vince_gf_probe,
-		.remove = vince_gf_remove, .suspend = vince_gf_suspend, .resume = vince_gf_resume, };
+				.of_match_table = gx_match_table, }, .probe = gf_probe,
+		.remove = gf_remove, .suspend = gf_suspend, .resume = gf_resume, };
 
-static int __init vince_gf_init(void)
+static int __init gf_init(void)
 {
 	int status;
 
@@ -1002,9 +1004,9 @@ static int __init vince_gf_init(void)
 	return 0;
 }
 
-module_init(vince_gf_init);
+module_init(gf_init);
 
-static void __exit vince_gf_exit(void)
+static void __exit gf_exit(void)
 {
 #ifdef GF_NETLINK_ENABLE
 	vince_netlink_exit();
@@ -1018,9 +1020,9 @@ static void __exit vince_gf_exit(void)
 	unregister_chrdev(SPIDEV_MAJOR, gf_driver.driver.name);
 }
 
-module_exit(vince_gf_exit);
+module_exit(gf_exit);
 
 MODULE_AUTHOR("Jiangtao Yi, <yijiangtao@goodix.com>");
 MODULE_DESCRIPTION("Goodix fingerprint vince SPI device interface");
 MODULE_LICENSE("GPL");
-MODULE_ALIAS("spi:gf-spi-vince");
+MODULE_ALIAS("spi:gf-spi");

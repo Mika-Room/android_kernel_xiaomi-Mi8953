@@ -738,9 +738,9 @@ static struct notifier_block goodix_noti_block = {
 
 static struct class *gf_class;
 #if defined(USE_SPI_BUS)
-static int ysl_gf_probe(struct spi_device *spi)
+static int gf_probe(struct spi_device *spi)
 #elif defined(USE_PLATFORM_BUS)
-static int ysl_gf_probe(struct platform_device *pdev)
+static int gf_probe(struct platform_device *pdev)
 #endif
 {
 	struct gf_dev *gf_dev = &gf;
@@ -863,9 +863,9 @@ error_hw:
 }
 
 #if defined(USE_SPI_BUS)
-static int ysl_gf_remove(struct spi_device *spi)
+static int gf_remove(struct spi_device *spi)
 #elif defined(USE_PLATFORM_BUS)
-static int ysl_gf_remove(struct platform_device *pdev)
+static int gf_remove(struct platform_device *pdev)
 #endif
 {
 	struct gf_dev *gf_dev = &gf;
@@ -902,11 +902,11 @@ static struct platform_driver gf_driver = {
 		.owner = THIS_MODULE,
 		.of_match_table = gx_match_table,
 	},
-	.probe = ysl_gf_probe,
-	.remove = ysl_gf_remove,
+	.probe = gf_probe,
+	.remove = gf_remove,
 };
 
-static int __init ysl_gf_init(void)
+static int __init gf_init(void)
 {
 	int status;
 
@@ -949,9 +949,9 @@ static int __init ysl_gf_init(void)
 	pr_info("status = 0x%x\n", status);
 	return 0;
 }
-module_init(ysl_gf_init);
+module_init(gf_init);
 
-static void __exit ysl_gf_exit(void)
+static void __exit gf_exit(void)
 {
 #ifdef GF_NETLINK_ENABLE
 	ysl_netlink_exit();
@@ -964,10 +964,9 @@ static void __exit ysl_gf_exit(void)
 	class_destroy(gf_class);
 	unregister_chrdev(SPIDEV_MAJOR, gf_driver.driver.name);
 }
-module_exit(ysl_gf_exit);
+module_exit(gf_exit);
 
 MODULE_AUTHOR("Jiangtao Yi, <yijiangtao@goodix.com>");
 MODULE_AUTHOR("Jandy Gou, <gouqingsong@goodix.com>");
 MODULE_DESCRIPTION("goodix fingerprint ysl sensor device driver");
 MODULE_LICENSE("GPL");
-MODULE_ALIAS("spi:gf-spi-ysl");
