@@ -133,10 +133,6 @@ bool synaptics_gesture_func_on_lansi = 1;
 #define WAKEUP_OFF 4
 #define WAKEUP_ON 5
 
-#ifdef CONFIG_PM
-extern bool lcm_ffbm_mode;
-#endif
-
 int synaptics_gesture_switch_lansi(struct input_dev *dev, unsigned int type, unsigned int code, int value)
 {
 
@@ -4735,32 +4731,6 @@ exit:
 }
 #endif
 
-#ifdef CONFIG_PM
-static int synaptics_rmi4_pm_suspend(struct device *dev){
-	dev_info(rmi4_data->pdev->dev.parent, "Enter %s\n",__func__);
-	if(lcm_ffbm_mode){
-		synaptics_rmi4_suspend(dev);
-	}
-	else{
-		dev_err(rmi4_data->pdev->dev.parent, "We are not in ffbm mode\n");
-	}
-
-	return 0;
-}
-
-static int synaptics_rmi4_pm_resume(struct device *dev){
-	dev_info(rmi4_data->pdev->dev.parent, "Enter %s\n",__func__);
-	if(lcm_ffbm_mode){
-		synaptics_rmi4_resume(dev);
-	}
-	else{
-		dev_err(rmi4_data->pdev->dev.parent, "We are not in ffbm mode\n");
-	}
-
-	return 0;
-}
-#endif
-
 static int synaptics_rmi4_suspend(struct device *dev)
 {
 	struct synaptics_rmi4_exp_fhandler *exp_fhandler;
@@ -4882,15 +4852,6 @@ exit:
 	printk("TP-time TP resume finish\n");
 	return 0;
 }
-
-#ifdef CONFIG_PM
-static const struct dev_pm_ops synaptics_rmi4_dev_pm_ops = {
-
-	.suspend = synaptics_rmi4_pm_suspend,
-	.resume = synaptics_rmi4_pm_resume,
-
-};
-#endif
 
 static struct platform_driver synaptics_rmi4_driver = {
 	.driver = {
